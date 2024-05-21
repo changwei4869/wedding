@@ -35,13 +35,11 @@ var (
 	TokenInvalid     = errors.New("这不是一个token,请重新登录。")
 )
 
-// CreateToken 生成token
 func (j *JWT) CreateToken(claims MyClaims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(j.JwtKey)
 }
 
-// ParserToken 解析token
 func (j *JWT) ParserToken(tokenString string) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return j.JwtKey, nil
@@ -60,8 +58,6 @@ func (j *JWT) ParserToken(tokenString string) error {
 	}
 }
 
-// JwtToken jwt中间件
-// todo 优化此类代码
 func JwtToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var code int
@@ -96,7 +92,6 @@ func JwtToken() gin.HandlerFunc {
 		}
 
 		j := NewJWT()
-		// 解析token
 		err := j.ParserToken(checkToken[1])
 		if err != nil {
 			if errors.Is(err, TokenExpired) {
@@ -108,7 +103,6 @@ func JwtToken() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			// 其他错误
 			c.JSON(http.StatusOK, gin.H{
 				"status":  errmsg.ERROR,
 				"message": err.Error(),

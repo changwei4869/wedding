@@ -49,7 +49,6 @@ func InitRouter() {
 
 	r.Use(middleware.Logger())
 	r.Use(gin.Recovery())
-	r.Use(middleware.Cors())
 
 	_ = r.Run(utils.HttpPort)
 
