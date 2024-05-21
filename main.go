@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/changwei4869/wedding/modules"
 	"github.com/changwei4869/wedding/modules/db"
+	"github.com/changwei4869/wedding/modules/redis"
 )
 
 // @title           Swagger Example API
@@ -21,9 +22,7 @@ import (
 
 // SwaggerUI: http://localhost:8088/swagger/index.html
 func main() {
-	// 引用数据库
 	db.InitDb()
-	// 引入路由组件
+	redis.InitRedis()
 	modules.InitRouter()
-
 }

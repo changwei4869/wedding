@@ -21,6 +21,9 @@ var (
 	AccessKeyID     string
 	SecretAccessKey string
 	UseSSL          bool
+
+	RedisHost string
+	RedisPort string
 )
 
 // 初始化
@@ -32,6 +35,7 @@ func init() {
 	LoadServer(file)
 	LoadData(file)
 	LoadMinio(file)
+	LoadRedis(file)
 }
 
 func LoadServer(file *ini.File) {
@@ -53,4 +57,9 @@ func LoadMinio(file *ini.File) {
 	AccessKeyID = file.Section("minio").Key("AccessKeyID").MustString("admin")
 	SecretAccessKey = file.Section("minio").Key("SecretAccessKey").MustString("12345678")
 	UseSSL = file.Section("minio").Key("UseSSL").MustBool(false)
+}
+
+func LoadRedis(file *ini.File) {
+	RedisHost = file.Section("redis").Key("RedisHost").MustString("47.121.133")
+	RedisPort = file.Section("redis").Key("RedisPort").MustString("6379")
 }
