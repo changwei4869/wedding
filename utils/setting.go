@@ -36,12 +36,12 @@ func init() {
 
 func LoadServer(file *ini.File) {
 	AppMode = file.Section("server").Key("AppMode").MustString("debug")
-	HttpPort = file.Section("server").Key("HttpPort").MustString(":3000")
+	HttpPort = file.Section("server").Key("HttpPort").MustString(":8088")
 	JwtKey = file.Section("server").Key("JwtKey").MustString("89js82js72")
 }
 
 func LoadData(file *ini.File) {
-	DbHost = file.Section("database").Key("DbHost").MustString("localhost")
+	DbHost = file.Section("database").Key("DbHost").MustString("47.121.133")
 	DbPort = file.Section("database").Key("DbPort").MustString("3306")
 	DbUser = file.Section("database").Key("DbUser").MustString("root")
 	DbPassWord = file.Section("database").Key("DbPassWord").MustString("demo")
@@ -49,7 +49,7 @@ func LoadData(file *ini.File) {
 }
 
 func LoadMinio(file *ini.File) {
-	Endpoint = file.Section("minio").Key("Endpoint").MustString("localhost:9000")
+	Endpoint = file.Section("minio").Key("Endpoint").MustString("47.121.133:9000")
 	AccessKeyID = file.Section("minio").Key("AccessKeyID").MustString("admin")
 	SecretAccessKey = file.Section("minio").Key("SecretAccessKey").MustString("12345678")
 	UseSSL = file.Section("minio").Key("UseSSL").MustBool(false)

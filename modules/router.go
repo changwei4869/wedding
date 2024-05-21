@@ -25,7 +25,7 @@ func InitRouter() {
 	api := r.Group("/api", middleware.Cors())
 	{
 		// health
-		api.POST("/health", health.HealthCheck)
+		api.GET("/health", health.HealthCheck)
 		// tag
 		api.GET("/tag/:id", tag.GetTagById)
 		api.POST("/tag", tag.AddTag)
