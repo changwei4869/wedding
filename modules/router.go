@@ -8,6 +8,7 @@ import (
 	"github.com/changwei4869/wedding/modules/health"
 	"github.com/changwei4869/wedding/modules/permission"
 	"github.com/changwei4869/wedding/modules/role"
+	"github.com/changwei4869/wedding/modules/site"
 	"github.com/changwei4869/wedding/modules/tag"
 	"github.com/changwei4869/wedding/utils"
 
@@ -45,6 +46,11 @@ func InitRouter() {
 		api.PUT("/admin", admin.EditAdmin)
 		//permission
 		api.GET("/permissions", permission.ListPermission)
+		// site
+		api.GET("/site/:id", site.GetSiteById)
+		api.POST("/site", site.AddSite)
+		api.DELETE("/site/:id", site.DeleteSite)
+		api.PUT("/site", site.EditSite)
 	}
 
 	r.Use(middleware.Logger())

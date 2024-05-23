@@ -59,6 +59,31 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.SitesAddReq:
+    properties:
+      city:
+        type: string
+      status:
+        type: integer
+    type: object
+  model.SitesEditReq:
+    properties:
+      city:
+        type: string
+      id:
+        type: integer
+      status:
+        type: integer
+    type: object
+  model.SitesResp:
+    properties:
+      city:
+        type: string
+      id:
+        type: integer
+      status:
+        type: integer
+    type: object
   model.TagsAddReq:
     properties:
       gender:
@@ -356,6 +381,86 @@ paths:
       summary: 删除指定id的角色
       tags:
       - DeleteRole
+  /site:
+    post:
+      consumes:
+      - application/json
+      description: 添加新site
+      parameters:
+      - description: Site 信息
+        in: body
+        name: site
+        required: true
+        schema:
+          $ref: '#/definitions/model.SitesAddReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 成功添加site
+          schema:
+            $ref: '#/definitions/model.SitesAddReq'
+      summary: 添加新site
+      tags:
+      - AddSite
+    put:
+      consumes:
+      - application/json
+      description: 编辑site
+      parameters:
+      - description: Site 信息
+        in: body
+        name: site
+        required: true
+        schema:
+          $ref: '#/definitions/model.SitesEditReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功编辑site
+          schema:
+            $ref: '#/definitions/model.SitesEditReq'
+      summary: 编辑site
+      tags:
+      - EditSite
+  /site/:id:
+    delete:
+      description: 删除指定id的site
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: 成功删除site
+          schema:
+            type: string
+      summary: 删除指定id的site
+      tags:
+      - DeleteSite
+    get:
+      description: 根据id获取site
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取site
+          schema:
+            $ref: '#/definitions/model.SitesResp'
+      summary: 根据id获取site
+      tags:
+      - GetSiteById
   /tag:
     post:
       consumes:
