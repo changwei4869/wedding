@@ -2,10 +2,11 @@ package role
 
 import (
 	"fmt"
-	"github.com/changwei4869/wedding/model"
-	"github.com/changwei4869/wedding/utils/response"
 	"net/http"
 	"strconv"
+
+	"github.com/changwei4869/wedding/model"
+	"github.com/changwei4869/wedding/utils/response"
 
 	"github.com/changwei4869/wedding/modules/db"
 	"github.com/gin-gonic/gin"
@@ -56,8 +57,8 @@ func ListRole(c *gin.Context) {
 // @tags AddRole
 // @accept application/json
 // @produce application/json
-// @param role body model.RoleAddReq true "Role 信息"
-// @success 201 {object} model.RoleAddReq "成功添加角色"
+// @param role body model.RolesAddReq true "Role 信息"
+// @success 201 {object} model.RolesAddReq "成功添加角色"
 // @router /role [post]
 func AddRole(c *gin.Context) {
 	role := model.RolesAddReq{}
@@ -109,8 +110,8 @@ func DeleteRole(c *gin.Context) {
 // @tags EditRole
 // @accept application/json
 // @produce application/json
-// @param role body model.RoleEditReq true "Role 信息"
-// @success 200 {object} model.RoleEditReq "成功编辑角色"
+// @param role body model.RolesEditReq true "Role 信息"
+// @success 200 {object} model.RolesEditReq "成功编辑角色"
 // @router /role [put]
 func EditRole(c *gin.Context) {
 	var updatedRole model.RolesEditReq

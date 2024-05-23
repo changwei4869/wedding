@@ -1,8 +1,9 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Tags struct {
@@ -55,10 +56,9 @@ type TagsDelBatchReq struct {
 
 // TagsResp tags返回信息
 type TagsResp struct {
-	Id        int            `json:"id" structs:"Id"`                //
-	Name      string         `json:"name" structs:"Name"`            //
-	Gender    string         `json:"gender" structs:"Gender"`        //
-	CreatedAt time.Time      `json:"created_at" structs:"CreatedAt"` //
-	UpdatedAt time.Time      `json:"updated_at" structs:"UpdatedAt"` //
-	DeletedAt gorm.DeletedAt `json:"deleted_at" structs:"DeletedAt"` //
+	Id        int       `json:"id" structs:"Id"`                //
+	Name      string    `json:"name" structs:"Name"`            //
+	Gender    string    `json:"gender" structs:"Gender"`        //
+	CreatedAt time.Time `json:"created_at" structs:"CreatedAt"` //
+	UpdatedAt time.Time `json:"updated_at" structs:"UpdatedAt"` //
 }
