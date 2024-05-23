@@ -1,8 +1,6 @@
 module github.com/changwei4869/wedding
 
-go 1.21
-
-toolchain go1.22.2
+go 1.20
 
 require (
 	github.com/gin-contrib/cors v1.7.1
