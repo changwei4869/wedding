@@ -7,18 +7,18 @@ import (
 )
 
 type Permissions struct {
-	Id          int            `gorm:"primarykey;comment:''" json:"id"` //
-	Name        string         `gorm:"comment:''" json:"name"`          //
-	Description string         `gorm:"comment:''" json:"description"`   //
-	CreatedAt   time.Time      `gorm:"comment:''" json:"created_at"`    //
-	UpdatedAt   time.Time      `gorm:"comment:''" json:"updated_at"`    //
-	DeletedAt   gorm.DeletedAt `gorm:"comment:''" json:"deleted_at"`    //
+	Id          int            `gorm:"primarykey;comment:''" json:"id"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at"`
 }
 
 type PermissionsListReq struct {
-	Id          int       `gorm:"primarykey;comment:''" json:"id"` //
-	Name        string    `gorm:"comment:''" json:"name"`          //
-	Description string    `gorm:"comment:''" json:"description"`   //
-	CreatedAt   time.Time `gorm:"comment:''" json:"created_at"`    //
-	UpdatedAt   time.Time `gorm:"comment:''" json:"updated_at"`    //
+	Id          int       `gorm:"primarykey;comment:''" json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
