@@ -1,15 +1,74 @@
 basePath: /api
 definitions:
+  model.AdminAddReq:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      role_id:
+        type: integer
+      status:
+        type: integer
+    type: object
+  model.AdminEditReq:
+    properties:
+      id:
+        type: integer
+      role_id:
+        type: integer
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
   model.HealthResp:
     properties:
       status:
         type: string
     type: object
-  model.TagsResp:
+  model.PermissionsListReq:
     properties:
       created_at:
         type: string
-      deleted_at:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.RolesAddReq:
+    type: object
+  model.RolesEditReq:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.TagsAddReq:
+    properties:
+      gender:
+        type: string
+      name:
+        type: string
+    type: object
+  model.TagsEditReq:
+    properties:
+      created_at:
         type: string
       gender:
         type: string
@@ -19,6 +78,29 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  model.TagsResp:
+    properties:
+      created_at:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.PageResp:
+    properties:
+      count:
+        type: integer
+      data: {}
+      pageNo:
+        type: integer
+      pageSize:
+        type: integer
     type: object
 host: localhost:8088
 info:
@@ -34,6 +116,109 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /admin:
+    get:
+      description: 列出所有管理员
+      parameters:
+      - description: 页码
+        in: query
+        name: pageNo
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 管理员ID
+        in: query
+        name: id
+        type: integer
+      - description: 管理员名称
+        in: query
+        name: name
+        type: string
+      - description: 管理员邮箱
+        in: query
+        name: email
+        type: string
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取所有管理员
+          schema:
+            $ref: '#/definitions/response.PageResp'
+      summary: 列出所有管理员
+      tags:
+      - ListAdmin
+    post:
+      consumes:
+      - application/json
+      description: 添加新管理员
+      parameters:
+      - description: Admin 信息
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/model.AdminAddReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 成功添加管理员
+          schema:
+            $ref: '#/definitions/model.AdminAddReq'
+      summary: 添加新管理员
+      tags:
+      - AddAdmin
+    put:
+      consumes:
+      - application/json
+      description: 编辑管理员
+      parameters:
+      - description: Admin 信息
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/model.AdminEditReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功编辑管理员
+          schema:
+            $ref: '#/definitions/model.AdminEditReq'
+      summary: 编辑管理员
+      tags:
+      - EditAdmin
+  /admin/:id:
+    delete:
+      description: 删除指定id的管理员
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: 成功删除管理员
+          schema:
+            type: string
+      summary: 删除指定id的管理员
+      tags:
+      - DeleteAdmin
   /health:
     get:
       consumes:
@@ -49,7 +234,190 @@ paths:
       summary: 健康检查
       tags:
       - health
+  /permission:
+    get:
+      description: 展示数据库中权限表中的所有权限
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取权限列表
+          schema:
+            items:
+              $ref: '#/definitions/model.PermissionsListReq'
+            type: array
+        "500":
+          description: 内部服务器错误
+          schema:
+            type: string
+      summary: 展示所有权限
+      tags:
+      - ListPermission
+  /role:
+    get:
+      description: 列出所有角色
+      parameters:
+      - description: 页码
+        in: query
+        name: pageNo
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 角色ID
+        in: query
+        name: id
+        type: integer
+      - description: 角色名称
+        in: query
+        name: name
+        type: string
+      - description: 角色描述
+        in: query
+        name: description
+        type: string
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取所有角色
+          schema:
+            $ref: '#/definitions/response.PageResp'
+      summary: 列出所有角色
+      tags:
+      - ListRole
+    post:
+      consumes:
+      - application/json
+      description: 添加新角色
+      parameters:
+      - description: Role 信息
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/model.RolesAddReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 成功添加角色
+          schema:
+            $ref: '#/definitions/model.RolesAddReq'
+      summary: 添加新角色
+      tags:
+      - AddRole
+    put:
+      consumes:
+      - application/json
+      description: 编辑角色
+      parameters:
+      - description: Role 信息
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/model.RolesEditReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功编辑角色
+          schema:
+            $ref: '#/definitions/model.RolesEditReq'
+      summary: 编辑角色
+      tags:
+      - EditRole
+  /role/:id:
+    delete:
+      description: 删除指定id的角色
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: 成功删除角色
+          schema:
+            type: string
+      summary: 删除指定id的角色
+      tags:
+      - DeleteRole
+  /tag:
+    post:
+      consumes:
+      - application/json
+      description: 添加新tag
+      parameters:
+      - description: Tag 信息
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/model.TagsAddReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 成功添加tag
+          schema:
+            $ref: '#/definitions/model.TagsAddReq'
+      summary: 添加新tag
+      tags:
+      - AddTag
+    put:
+      consumes:
+      - application/json
+      description: 编辑tag
+      parameters:
+      - description: Tag 信息
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/model.TagsEditReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功编辑tag
+          schema:
+            $ref: '#/definitions/model.TagsEditReq'
+      summary: 编辑tag
+      tags:
+      - EditTag
   /tag/:id:
+    delete:
+      description: 删除指定id的tag
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: 成功删除tag
+          schema:
+            type: string
+      summary: 删除指定id的tag
+      tags:
+      - DeleteTag
     get:
       description: 根据id获取tag
       parameters:
