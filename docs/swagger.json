@@ -384,7 +384,177 @@
                 }
             }
         },
+        "/site": {
+            "get": {
+                "description": "从数据库中获取所有站点记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site"
+                ],
+                "summary": "获取所有站点",
+                "responses": {
+                    "200": {
+                        "description": "成功获取所有站点",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SitesResp"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "编辑site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "EditSite"
+                ],
+                "summary": "编辑site",
+                "parameters": [
+                    {
+                        "description": "Site 信息",
+                        "name": "site",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SitesEditReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功编辑site",
+                        "schema": {
+                            "$ref": "#/definitions/model.SitesEditReq"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "添加新site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AddSite"
+                ],
+                "summary": "添加新site",
+                "parameters": [
+                    {
+                        "description": "Site 信息",
+                        "name": "site",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SitesAddReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "成功添加site",
+                        "schema": {
+                            "$ref": "#/definitions/model.SitesAddReq"
+                        }
+                    }
+                }
+            }
+        },
+        "/site/:id": {
+            "get": {
+                "description": "根据id获取site",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "GetSiteById"
+                ],
+                "summary": "根据id获取site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取site",
+                        "schema": {
+                            "$ref": "#/definitions/model.SitesResp"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除指定id的site",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "DeleteSite"
+                ],
+                "summary": "删除指定id的site。",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功删除site",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/tag": {
+            "get": {
+                "description": "获取数据库中所有标签记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tag"
+                ],
+                "summary": "获取所有标签",
+                "responses": {
+                    "200": {
+                        "description": "成功获取所有标签",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.TagsResp"
+                            }
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "编辑tag",
                 "consumes": [
@@ -596,6 +766,45 @@
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "model.SitesAddReq": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.SitesEditReq": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.SitesResp": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         },
