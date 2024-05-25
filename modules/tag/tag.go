@@ -2,9 +2,10 @@ package tag
 
 import (
 	"fmt"
-	"github.com/changwei4869/wedding/model"
 	"net/http"
 	"strconv"
+
+	"github.com/changwei4869/wedding/model"
 
 	"github.com/changwei4869/wedding/modules/db"
 	"github.com/gin-gonic/gin"
@@ -37,6 +38,29 @@ func GetTagById(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, tag)
+}
+
+// GetAllTags 获取数据库中所有标签
+// @Summary 获取所有标签
+// @Description 获取数据库中所有标签记录
+// @Tags Tag
+// @Accept json
+// @Produce json
+// @Success 200 {array} model.TagsResp "成功获取所有标签"
+// @Router /tag [get]
+func GetAllTags(c *gin.Context) {
+	// 创建标签服务
+
+	tags, err := NewTagsService(db.GetDb()).GetAll()
+
+	if err != nil {
+		// 如果发生错误，返回错误响应
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 返回获取的所有标签
+	c.JSON(http.StatusOK, tags)
 }
 
 // AddTag 添加新tag

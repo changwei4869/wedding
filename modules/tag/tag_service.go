@@ -10,7 +10,7 @@ import (
 )
 
 type ITagsService interface {
-	All() (res response.PageResp, e error)
+	GetAll() (res response.PageResp, e error)
 	Count() (res map[string]interface{}, e error)
 	List(page response.PageReq, listReq model.TagsListReq) (res response.PageResp, e error)
 	Detail(id int) (res model.TagsResp, e error)
@@ -21,33 +21,32 @@ type ITagsService interface {
 	DelBatch(delReq model.TagsDelBatchReq) (e error)
 }
 
-// NewTagsService 初始化
-func NewTagsService(db *gorm.DB) ITagsService {
-	return &tagsService{db: db}
-}
-
 // tagsService tags
 type tagsService struct {
 	db *gorm.DB
 }
 
+// NewTagsService 初始化
+func NewTagsService(db *gorm.DB) *tagsService {
+	return &tagsService{db: db}
+}
+
 // All tags列表
-func (this tagsService) All() (res response.PageResp, e error) {
-	// 数据
-	query := this.db.Model(&model.Tags{})
-	var rows []model.Tags
-	err := query.Order("id desc").Find(&rows).Error
-	if e = response.CheckErr(err, "tags tagsService  All Find err"); e != nil {
-		return
+func (this tagsService) GetAll() ([]model.TagsResp, error) {
+	var tags []model.Tags
+	if err := this.db.Find(&tags).Error; err != nil {
+		return nil, err
 	}
-	resps := []model.TagsResp{}
-	response.CopyStruct(&resps, rows)
-	return response.PageResp{
-		PageNo:   0,
-		PageSize: 0,
-		Count:    0,
-		Data:     resps,
-	}, nil
+
+	var tagsResp []model.TagsResp
+	for _, tag := range tags {
+		tagsResp = append(tagsResp, model.TagsResp{
+			Id:     tag.Id,
+			Name:   tag.Name,
+			Gender: tag.Gender,
+		})
+	}
+	return tagsResp, nil
 }
 
 // Count tags

@@ -66,7 +66,7 @@ func AddSite(c *gin.Context) {
 }
 
 // DeleteSite 删除指定id的site
-// @summary 删除指定id的site
+// @summary 删除指定id的site。
 // @description 删除指定id的site
 // @tags DeleteSite
 // @param id path string true "id"
@@ -92,6 +92,23 @@ func DeleteSite(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, "site deleted successfully")
+}
+
+// GetAllSites 从数据库中获取所有站点记录
+// @Summary 获取所有站点
+// @Description 从数据库中获取所有站点记录
+// @Tags Site
+// @Accept json
+// @Produce json
+// @Success 200 {array} model.SitesResp "成功获取所有站点"
+// @Router /site [get]
+func GetAllSites(c *gin.Context) {
+	sites, err := NewSiteService(db.GetDb()).GetAll()
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("get all sites from db error: %s", err))
+		return
+	}
+	c.JSON(http.StatusOK, sites)
 }
 
 // EditSite 编辑site

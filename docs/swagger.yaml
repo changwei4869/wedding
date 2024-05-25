@@ -382,6 +382,22 @@ paths:
       tags:
       - DeleteRole
   /site:
+    get:
+      consumes:
+      - application/json
+      description: 从数据库中获取所有站点记录
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取所有站点
+          schema:
+            items:
+              $ref: '#/definitions/model.SitesResp'
+            type: array
+      summary: 获取所有站点
+      tags:
+      - Site
     post:
       consumes:
       - application/json
@@ -440,7 +456,7 @@ paths:
           description: 成功删除site
           schema:
             type: string
-      summary: 删除指定id的site
+      summary: 删除指定id的site。
       tags:
       - DeleteSite
     get:
@@ -462,6 +478,22 @@ paths:
       tags:
       - GetSiteById
   /tag:
+    get:
+      consumes:
+      - application/json
+      description: 获取数据库中所有标签记录
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取所有标签
+          schema:
+            items:
+              $ref: '#/definitions/model.TagsResp'
+            type: array
+      summary: 获取所有标签
+      tags:
+      - Tag
     post:
       consumes:
       - application/json

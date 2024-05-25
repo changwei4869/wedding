@@ -391,6 +391,30 @@ const docTemplate = `{
             }
         },
         "/site": {
+            "get": {
+                "description": "从数据库中获取所有站点记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site"
+                ],
+                "summary": "获取所有站点",
+                "responses": {
+                    "200": {
+                        "description": "成功获取所有站点",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SitesResp"
+                            }
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "编辑site",
                 "consumes": [
@@ -492,7 +516,7 @@ const docTemplate = `{
                 "tags": [
                     "DeleteSite"
                 ],
-                "summary": "删除指定id的site",
+                "summary": "删除指定id的site。",
                 "parameters": [
                     {
                         "type": "string",
@@ -513,6 +537,30 @@ const docTemplate = `{
             }
         },
         "/tag": {
+            "get": {
+                "description": "获取数据库中所有标签记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tag"
+                ],
+                "summary": "获取所有标签",
+                "responses": {
+                    "200": {
+                        "description": "成功获取所有标签",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.TagsResp"
+                            }
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "编辑tag",
                 "consumes": [

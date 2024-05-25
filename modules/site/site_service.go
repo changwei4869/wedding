@@ -1,6 +1,8 @@
 package site
 
 import (
+	"log"
+
 	"github.com/changwei4869/wedding/model"
 	"gorm.io/gorm"
 )
@@ -23,6 +25,25 @@ func (s *SiteService) Detail(id int) (model.SitesResp, error) {
 		City:   site.City,
 		Status: site.Status,
 	}, nil
+}
+
+func (s *SiteService) GetAll() ([]model.SitesResp, error) {
+	var sites []model.Sites
+	if err := s.db.Find(&sites).Error; err != nil {
+		return nil, err
+	}
+
+	var sitesResp []model.SitesResp
+	for _, site := range sites {
+		sitesResp = append(sitesResp, model.SitesResp{
+			ID:     site.ID,
+			City:   site.City,
+			Status: site.Status,
+		})
+	}
+	log.Println(sitesResp)
+
+	return sitesResp, nil
 }
 
 func (s *SiteService) Add(site model.SitesAddReq) error {

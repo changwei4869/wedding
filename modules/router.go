@@ -29,9 +29,11 @@ func InitRouter() {
 		api.POST("/health", health.HealthCheck)
 		// tag
 		api.GET("/tag/:id", tag.GetTagById)
+		api.GET("/tag", tag.GetAllTags)
 		api.POST("/tag", tag.AddTag)
 		api.DELETE("/tag/:id", tag.DeleteTag)
 		api.PUT("/tag", tag.EditTag)
+
 		// file
 		api.POST("/file/upload", file.UploadFile)
 		//role
@@ -51,6 +53,7 @@ func InitRouter() {
 		api.POST("/site", site.AddSite)
 		api.DELETE("/site/:id", site.DeleteSite)
 		api.PUT("/site", site.EditSite)
+		api.GET("/site", site.GetAllSites)
 	}
 
 	r.Use(middleware.Logger())
