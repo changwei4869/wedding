@@ -7,6 +7,7 @@ import (
 	"github.com/changwei4869/wedding/modules/file"
 	"github.com/changwei4869/wedding/modules/health"
 	"github.com/changwei4869/wedding/modules/permission"
+	"github.com/changwei4869/wedding/modules/registration"
 	"github.com/changwei4869/wedding/modules/role"
 	"github.com/changwei4869/wedding/modules/site"
 	"github.com/changwei4869/wedding/modules/tag"
@@ -54,6 +55,13 @@ func InitRouter() {
 		api.DELETE("/site/:id", site.DeleteSite)
 		api.PUT("/site", site.EditSite)
 		api.GET("/site", site.GetAllSites)
+		//registration
+		api.GET("/registration/getregistration", registration.GetRegistration)
+		api.GET("/registration", registration.GetAllRegistrations)
+		api.DELETE("/registration/:id", registration.DeleteRegistration)
+		api.PUT("/registration", registration.EditRegistration)
+		api.POST("/registration/checkregistration", registration.CheckRegistration)
+		api.DELETE("/registration/batch_delete", registration.DelBatchRegistrations)
 	}
 
 	r.Use(middleware.Logger())

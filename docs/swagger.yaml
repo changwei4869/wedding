@@ -44,6 +44,161 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.RegistrationsCheckResp:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  model.RegistrationsDelBatchReq:
+    properties:
+      ids:
+        description: 主键列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  model.RegistrationsEditReq:
+    properties:
+      age:
+        type: integer
+      annual_income:
+        type: string
+      asset_status:
+        type: string
+      bride_price:
+        type: string
+      channel:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      distance:
+        type: string
+      education:
+        type: string
+      expect_help:
+        type: string
+      gender:
+        type: integer
+      height:
+        type: integer
+      id:
+        type: integer
+      live_together:
+        type: string
+      location:
+        type: string
+      looking_for:
+        type: string
+      marriage_certificate:
+        type: string
+      marriage_history:
+        type: string
+      married_life:
+        type: string
+      name:
+        type: string
+      need_child:
+        type: string
+      number:
+        type: string
+      phone:
+        type: string
+      profession:
+        type: string
+      qualifications:
+        type: string
+      reason:
+        type: string
+      registrationscol:
+        type: string
+      residence:
+        type: string
+      self_description:
+        type: string
+      sexual_orientation:
+        type: string
+      status:
+        type: integer
+      updated_at:
+        type: string
+      wechat:
+        type: string
+      wedding_mode:
+        type: string
+      weight:
+        type: integer
+    type: object
+  model.RegistrationsResp:
+    properties:
+      age:
+        type: integer
+      annual_income:
+        type: string
+      asset_status:
+        type: string
+      bride_price:
+        type: string
+      channel:
+        type: string
+      distance:
+        type: string
+      education:
+        type: string
+      expect_help:
+        type: string
+      gender:
+        type: integer
+      height:
+        type: integer
+      id:
+        type: integer
+      live_together:
+        type: string
+      location:
+        type: string
+      looking_for:
+        type: string
+      marriage_certificate:
+        type: string
+      marriage_history:
+        type: string
+      married_life:
+        type: string
+      name:
+        type: string
+      need_child:
+        type: string
+      number:
+        type: string
+      phone:
+        type: string
+      profession:
+        type: string
+      qualifications:
+        type: string
+      registrationscol:
+        type: string
+      residence:
+        type: string
+      self_description:
+        type: string
+      sexual_orientation:
+        type: string
+      status:
+        type: integer
+      wechat:
+        type: string
+      wedding_mode:
+        type: string
+      weight:
+        type: integer
+    type: object
   model.RolesAddReq:
     type: object
   model.RolesEditReq:
@@ -244,6 +399,75 @@ paths:
       summary: 删除指定id的管理员
       tags:
       - DeleteAdmin
+  /checkregistration:
+    post:
+      consumes:
+      - application/json
+      description: 通过审核status值设为1，拒绝设为2。待审核为0
+      parameters:
+      - description: Registration ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: Reason for approval or rejection
+        in: body
+        name: reason
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RegistrationsCheckResp'
+        "400":
+          description: Invalid request parameters
+          schema:
+            type: string
+        "500":
+          description: Failed to update registration status
+          schema:
+            type: string
+      summary: Check registration
+      tags:
+      - registrations
+  /getregistration:
+    get:
+      consumes:
+      - application/json
+      description: Get registrations by status and location
+      parameters:
+      - description: Status of the registration
+        in: query
+        name: status
+        type: integer
+      - description: Location of the registration
+        in: query
+        name: location
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.RegistrationsResp'
+            type: array
+        "400":
+          description: Invalid request parameters
+          schema:
+            type: string
+        "500":
+          description: get registration from db error
+          schema:
+            type: string
+      summary: Get registrations based on status and location
+      tags:
+      - registrations
   /health:
     get:
       consumes:
@@ -278,6 +502,85 @@ paths:
       summary: 展示所有权限
       tags:
       - ListPermission
+  /registration:
+    get:
+      consumes:
+      - application/json
+      description: 获取数据库中所有注册信息记录
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取所有注册信息
+          schema:
+            items:
+              $ref: '#/definitions/model.RegistrationsResp'
+            type: array
+      summary: 获取所有注册信息
+      tags:
+      - Registration
+    put:
+      consumes:
+      - application/json
+      description: 编辑registration
+      parameters:
+      - description: Registration 信息
+        in: body
+        name: registration
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegistrationsEditReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功编辑registration
+          schema:
+            $ref: '#/definitions/model.RegistrationsEditReq'
+      summary: 编辑registration
+      tags:
+      - EditRegistration
+  /registration/:id:
+    delete:
+      description: 删除指定id的registration
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: 成功删除registration
+          schema:
+            type: string
+      summary: 删除指定id的registration
+      tags:
+      - DeleteRegistration
+  /registration/batch_delete:
+    delete:
+      consumes:
+      - application/json
+      description: 批量删除提供的所有注册信息
+      parameters:
+      - description: 需要删除的注册信息ID列表
+        in: body
+        name: delReq
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegistrationsDelBatchReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功删除所有选中注册信息
+          schema:
+            type: string
+      summary: 批量删除注册信息
+      tags:
+      - DelBatchRegistrations
   /role:
     get:
       description: 列出所有角色
