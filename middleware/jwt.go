@@ -8,8 +8,8 @@ import (
 	"github.com/changwei4869/wedding/utils"
 	"github.com/changwei4869/wedding/utils/errmsg"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type JWT struct {
@@ -23,8 +23,8 @@ func NewJWT() *JWT {
 }
 
 type MyClaims struct {
-	Username string `json:"username"`
-	jwt.RegisteredClaims
+	Phone string `json:"phone"`
+	jwt.StandardClaims
 }
 
 // 定义错误
@@ -40,22 +40,31 @@ func (j *JWT) CreateToken(claims MyClaims) (string, error) {
 	return token.SignedString(j.JwtKey)
 }
 
-func (j *JWT) ParserToken(tokenString string) error {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+func (j *JWT) ParserToken(tokenString string) (*MyClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return j.JwtKey, nil
 	})
-	// 验证token
-	if token.Valid {
-		return nil
-	} else if errors.Is(err, jwt.ErrTokenMalformed) {
-		return TokenMalformed
-	} else if errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet) {
-		return TokenExpired
-	} else if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
-		return TokenInvalid
-	} else {
-		return TokenNotValidYet
+
+	if err != nil {
+		if errors.Is(err, jwt.ErrSignatureInvalid) {
+			return nil, TokenInvalid
+		} else if ve, ok := err.(*jwt.ValidationError); ok {
+			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
+				return nil, TokenMalformed
+			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
+				return nil, TokenExpired
+			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
+				return nil, TokenNotValidYet
+			}
+		}
+		return nil, err
 	}
+
+	if claims, ok := token.Claims.(*MyClaims); ok && token.Valid {
+		return claims, nil
+	}
+
+	return nil, TokenInvalid
 }
 
 func JwtToken() gin.HandlerFunc {
@@ -92,7 +101,7 @@ func JwtToken() gin.HandlerFunc {
 		}
 
 		j := NewJWT()
-		err := j.ParserToken(checkToken[1])
+		claims, err := j.ParserToken(checkToken[1])
 		if err != nil {
 			if errors.Is(err, TokenExpired) {
 				c.JSON(http.StatusOK, gin.H{
@@ -112,7 +121,7 @@ func JwtToken() gin.HandlerFunc {
 			return
 		}
 
-		//c.Set("username",)
+		c.Set("phone", claims.Phone)
 		c.Next()
 	}
 }

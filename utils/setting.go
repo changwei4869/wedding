@@ -44,7 +44,7 @@ func LoadServer(file *ini.File) {
 }
 
 func LoadData(file *ini.File) {
-	DbHost = file.Section("database").Key("DbHost").MustString("47.121.133")
+	DbHost = file.Section("database").Key("DbHost").MustString("47.121.133.182")
 	DbPort = file.Section("database").Key("DbPort").MustString("3306")
 	DbUser = file.Section("database").Key("DbUser").MustString("root")
 	DbPassWord = file.Section("database").Key("DbPassWord").MustString("demo")
@@ -52,13 +52,13 @@ func LoadData(file *ini.File) {
 }
 
 func LoadMinio(file *ini.File) {
-	Endpoint = file.Section("minio").Key("Endpoint").MustString("47.121.133:9000")
+	Endpoint = file.Section("minio").Key("Endpoint").MustString("47.121.133.182:9000")
 	AccessKeyID = file.Section("minio").Key("AccessKeyID").MustString("admin")
 	SecretAccessKey = file.Section("minio").Key("SecretAccessKey").MustString("12345678")
 	UseSSL = file.Section("minio").Key("UseSSL").MustBool(false)
 }
 
 func LoadRedis(file *ini.File) {
-	RedisHost = file.Section("redis").Key("RedisHost").MustString("47.121.133")
+	RedisHost = file.Section("redis").Key("RedisHost").MustString("47.121.133.182")
 	RedisPort = file.Section("redis").Key("RedisPort").MustString("6379")
 }

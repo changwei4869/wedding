@@ -14,13 +14,13 @@ import (
 )
 
 var db *gorm.DB
-var err error
 
 func GetDb() *gorm.DB {
 	return db
 }
 
 func InitDb() {
+	var err error
 	dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		utils.DbUser,
 		utils.DbPassWord,

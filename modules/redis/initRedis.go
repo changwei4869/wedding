@@ -19,6 +19,7 @@ func GetRdb() *redis.Client {
 }
 
 func InitRedis() {
+	ctx = context.Background()
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", utils.RedisHost, utils.RedisPort),
 		Password: "",

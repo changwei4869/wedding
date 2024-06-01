@@ -2,9 +2,14 @@ package admin
 
 import (
 	"fmt"
-	"github.com/changwei4869/wedding/utils/response"
 	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/changwei4869/wedding/middleware"
+	"github.com/changwei4869/wedding/utils"
+	"github.com/changwei4869/wedding/utils/response"
+	"github.com/dgrijalva/jwt-go"
 
 	"github.com/changwei4869/wedding/model"
 	"github.com/changwei4869/wedding/modules/db"
@@ -28,14 +33,27 @@ import (
 func ListAdmin(c *gin.Context) {
 	var pageReq response.PageReq
 	var listReq model.AdminListReq
+	var err error
 
 	pageNo := c.DefaultQuery("pageNo", "1")
 	pageSize := c.DefaultQuery("pageSize", "10")
-	pageReq.PageNo, _ = strconv.Atoi(pageNo)
-	pageReq.PageSize, _ = strconv.Atoi(pageSize)
+	pageReq.PageNo, err = strconv.Atoi(pageNo)
+	if err != nil {
+		c.String(http.StatusBadRequest, "pageNo is not a number")
+		return
+	}
+	pageReq.PageSize, err = strconv.Atoi(pageSize)
+	if err != nil {
+		c.String(http.StatusBadRequest, "pageSize is not a number")
+		return
+	}
 
 	if id := c.Query("id"); id != "" {
-		listReq.Id, _ = strconv.Atoi(id)
+		listReq.Id, err = strconv.Atoi(id)
+		if err != nil {
+			c.String(http.StatusBadRequest, "id is not a number")
+			return
+		}
 	}
 	listReq.Name = c.Query("name")
 	listReq.Phone = c.Query("phone")
@@ -46,6 +64,7 @@ func ListAdmin(c *gin.Context) {
 		if err != nil {
 			// 处理字符串转换为整数错误
 			c.String(http.StatusInternalServerError, "failed string to int")
+			return
 		}
 		listReq.Role_id = roleID
 	}
@@ -56,6 +75,7 @@ func ListAdmin(c *gin.Context) {
 		if err != nil {
 			// 处理字符串转换为整数错误
 			c.String(http.StatusInternalServerError, "failed string to int")
+			return
 		}
 		listReq.Status = status
 	}
@@ -84,12 +104,13 @@ func AddAdmin(c *gin.Context) {
 		return
 	}
 
+	admin.Password = utils.ComputeMD5(admin.Password)
 	if err := NewAdminsService(db.GetDb()).Add(admin); err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error adding admin to db: %s", err))
 		return
 	}
 
-	c.JSON(http.StatusCreated, admin)
+	c.String(http.StatusCreated, "created admin successfully")
 }
 
 // DeleteAdmin 删除指定id的管理员
@@ -143,4 +164,36 @@ func EditAdmin(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, updatedAdmin)
+}
+
+func AdminLogin(c *gin.Context) {
+	login := model.AdminLoginReq{}
+	if err := c.BindJSON(&login); err != nil {
+		c.String(http.StatusBadRequest, "invalid JSON format")
+		return
+	}
+
+	admin, err := NewAdminsService(db.GetDb()).GetAdminByPhone(login.Phone)
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("error getting admin from db: %s", err))
+		return
+	}
+	if admin.Password != utils.ComputeMD5(login.Password) {
+		c.String(http.StatusUnauthorized, "password incorrect")
+		return
+	}
+	token, err := middleware.NewJWT().CreateToken(middleware.MyClaims{
+		Phone: login.Phone,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
+		},
+	})
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("error creating token: %s", err))
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"token":  token,
+	})
 }
