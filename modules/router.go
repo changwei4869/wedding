@@ -27,7 +27,7 @@ func InitRouter() {
 	api := r.Group("/api", middleware.Cors())
 	{
 		// health
-		api.POST("/health", health.HealthCheck)
+		api.GET("/health", health.HealthCheck)
 		// tag
 		api.GET("/tag/:id", tag.GetTagById)
 		api.GET("/tag", tag.GetAllTags)
@@ -66,7 +66,6 @@ func InitRouter() {
 
 	r.Use(middleware.Logger())
 	r.Use(gin.Recovery())
-	r.Use(middleware.Cors())
 
 	_ = r.Run(utils.HttpPort)
 

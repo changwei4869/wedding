@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-// Logger 日志中间件
-// todo 可考虑更换其他日志中间件
 func Logger() gin.HandlerFunc {
 	filePath := "log/log"
 	//linkName := "latest_log.log"
