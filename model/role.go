@@ -16,11 +16,11 @@ type Roles struct {
 }
 
 type RolesListReq struct {
-	Id          int    `json:"id" form:"id"`                   //
-	Name        string `json:"name" form:"name"`               //
-	Description string `json:"description" form:"description"` //
-	CreatedAt   string `json:"created_at" form:"created_at"`   //
-	UpdatedAt   string `json:"updated_at" form:"updated_at"`   //
+	Id          int    `json:"id" form:"id"`
+	Name        string `json:"name" form:"name"`
+	Description string `json:"description" form:"description"` 
+	CreatedAt   string `json:"created_at" form:"created_at"`
+	UpdatedAt   string `json:"updated_at" form:"updated_at"`
 }
 
 // RolesDetailReq roles详情参数
@@ -34,11 +34,11 @@ type RolesAddReq struct {
 
 // RolesEditReq roles新增参数
 type RolesEditReq struct {
-	Id          int       `json:"id" form:"id"`                   //
-	Name        string    `json:"name" form:"name"`               //
+	Id          int       `json:"id" form:"id"`
+	Name        string    `json:"name" form:"name"`
 	Description string    `json:"description" form:"description"` //
-	CreatedAt   time.Time `json:"created_at" form:"created_at"`   //
-	UpdatedAt   time.Time `json:"updated_at" form:"updated_at"`   //
+	CreatedAt   time.Time `json:"created_at" form:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at"`
 }
 
 // RolesDelReq roles删除参数
@@ -53,9 +53,9 @@ type RolesDelBatchReq struct {
 
 // RolesResp roles返回信息
 type RolesResp struct {
-	Id          int       `json:"id" structs:"Id"`                   //
-	Name        string    `json:"name" structs:"Name"`               //
+	Id          int       `json:"id" structs:"Id"`
+	Name        string    `json:"name" structs:"Name"`
 	Description string    `json:"description" structs:"Description"` //
-	CreatedAt   time.Time `json:"created_at" structs:"CreatedAt"`    //
-	UpdatedAt   time.Time `json:"updated_at" structs:"UpdatedAt"`    //
+	CreatedAt   time.Time `json:"created_at" structs:"CreatedAt"`
+	UpdatedAt   time.Time `json:"updated_at" structs:"UpdatedAt"`
 }

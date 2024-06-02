@@ -47,6 +47,7 @@ func InitRouter() {
 		api.POST("/admin", admin.AddAdmin)
 		api.DELETE("/admin/:id", admin.DeleteAdmin)
 		api.PUT("/admin", admin.EditAdmin)
+		api.POST("/admin/login", admin.AdminLogin)
 		//permission
 		api.GET("/permissions", permission.ListPermission)
 		// site

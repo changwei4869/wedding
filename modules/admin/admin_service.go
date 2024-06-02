@@ -11,6 +11,7 @@ type IAdminsService interface {
 	Add(admin model.AdminAddReq) (e error)
 	Del(id int) (e error)
 	Edit(admin model.AdminEditReq) (e error)
+	GetAdminByPhone(phone string) (model.Admins, error)
 }
 
 type AdminsService struct {
@@ -79,8 +80,12 @@ func (this AdminsService) List(page response.PageReq, listReq model.AdminListReq
 	}, nil
 }
 
-func (this AdminsService) Add(admin model.AdminAddReq) error {
-	return this.db.Create(&admin).Error
+func (this AdminsService) Add(admin model.AdminAddReq) (e error) {
+	var row model.Admins
+	response.CopyStruct(&row, admin)
+	err := this.db.Create(&row).Error
+	e = response.CheckErr(err, "admin AdminsService Create err")
+	return
 }
 
 func (this AdminsService) Del(id int) error {
@@ -89,4 +94,11 @@ func (this AdminsService) Del(id int) error {
 
 func (this *AdminsService) Edit(admin model.AdminEditReq) error {
 	return this.db.Model(&model.Admins{}).Where("id = ?", admin.ID).Updates(admin).Error
+}
+
+func (this *AdminsService) GetAdminByPhone(phone string) (model.Admins, error) {
+	var admin model.Admins
+	err := this.db.Where("phone = ?", phone).First(&admin).Error
+	response.CheckErr(err, "admin AdminsService GetAdminByPhone err")
+	return admin, err
 }

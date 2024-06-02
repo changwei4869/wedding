@@ -29,14 +29,27 @@ import (
 func ListRole(c *gin.Context) {
 	var pageReq response.PageReq
 	var listReq model.RolesListReq
+	var err error
 
 	pageNo := c.DefaultQuery("pageNo", "1")
 	pageSize := c.DefaultQuery("pageSize", "10")
-	pageReq.PageNo, _ = strconv.Atoi(pageNo)
-	pageReq.PageSize, _ = strconv.Atoi(pageSize)
+	pageReq.PageNo, err = strconv.Atoi(pageNo)
+	if err != nil {
+		c.String(http.StatusBadRequest, "pageNo is not a number")
+		return
+	}
+	pageReq.PageSize, err = strconv.Atoi(pageSize)
+	if err != nil {
+		c.String(http.StatusBadRequest, "pageSize is not a number")
+		return
+	}
 
 	if id := c.Query("id"); id != "" {
-		listReq.Id, _ = strconv.Atoi(id)
+		listReq.Id, err = strconv.Atoi(id)
+		if err != nil {
+			c.String(http.StatusBadRequest, "id is not a number")
+			return
+		}
 	}
 	listReq.Name = c.Query("name")
 	listReq.Description = c.Query("description")
