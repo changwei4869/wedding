@@ -145,3 +145,52 @@ type UsersEditReq struct {
 	UpdatedAt           time.Time      `json:"updated_at" form:"updated_at"`
 	DeletedAt           gorm.DeletedAt `json:"deleted_at" form:"deleted_at"`
 }
+
+// UsersDelBatchReq users批量删除参数
+type UsersDelBatchReq struct {
+	Ids []int `json:"ids" form:"ids" binding:"required"` // 主键列表
+}
+
+// UsersResp users返回信息
+type UsersResp struct {
+	Id                  int       `json:"id" structs:"Id"`
+	Uid                 string    `json:"uid" structs:"Uid"`
+	Avatar              string    `json:"avatar" structs:"Avatar"`
+	Vitality            int       `json:"vitality" structs:"Vitality"`
+	Diamond             int       `json:"diamond" structs:"Diamond"`
+	Vip                 string    `json:"vip" structs:"Vip"`
+	Name                string    `json:"name" structs:"Name"`
+	Password            string    `json:"password" structs:"Password"`
+	RoleId              int       `json:"role_id" structs:"RoleId"`
+	Phone               string    `json:"phone" structs:"Phone"`
+	Wechat              string    `json:"wechat" structs:"Wechat"`
+	Gender              int       `json:"gender" structs:"Gender"`
+	Blacklist           int       `json:"blacklist" structs:"Blacklist"`
+	Age                 int       `json:"age" structs:"Age"`
+	Height              int       `json:"height" structs:"Height"`
+	Weight              int       `json:"weight" structs:"Weight"`
+	Location            string    `json:"location" structs:"Location"`
+	Residence           string    `json:"residence" structs:"Residence"`
+	Qualifications      string    `json:"qualifications" structs:"Qualifications"`
+	SexualOrientation   string    `json:"sexual_orientation" structs:"SexualOrientation"`
+	MarriageHistory     string    `json:"marriage_history" structs:"MarriageHistory"`
+	Profession          string    `json:"profession" structs:"Profession"`
+	AnnualIncome        string    `json:"annual_income" structs:"AnnualIncome"`
+	AssetStatus         string    `json:"asset_status" structs:"AssetStatus"`
+	SelfDescription     string    `json:"self_description" structs:"SelfDescription"`
+	MarriageCertificate string    `json:"marriage_certificate" structs:"MarriageCertificate"`
+	LiveTogether        string    `json:"live_together" structs:"LiveTogether"`
+	NeedChild           string    `json:"need_child" structs:"NeedChild"`
+	BridePrice          string    `json:"bride_price" structs:"BridePrice"`
+	Distance            string    `json:"distance" structs:"Distance"`
+	WeddingMode         string    `json:"wedding_mode" structs:"WeddingMode"`
+	MarriedLife         string    `json:"married_life" structs:"MarriedLife"`
+	LookingFor          string    `json:"looking_for" structs:"LookingFor"`
+	ExpectHelp          string    `json:"expect_help" structs:"ExpectHelp"`
+	Channel             string    `json:"channel" structs:"Channel"`
+	LogOut              string    `json:"log_out" structs:"LogOut"`
+	CreatedBy           string    `json:"created_by" structs:"CreatedBy"`
+	CreatedAt           time.Time `json:"created_at" structs:"CreatedAt"`
+	UpdatedAt           time.Time `json:"updated_at" structs:"UpdatedAt"`
+	DeletedAt           time.Time `json:"deleted_at" structs:"DeletedAt"`
+}
