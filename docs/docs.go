@@ -181,6 +181,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/checkregistration": {
+            "post": {
+                "description": "通过审核status值设为1，拒绝设为2。待审核为0",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "registrations"
+                ],
+                "summary": "Check registration",
+                "parameters": [
+                    {
+                        "description": "Registration ID",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Reason for approval or rejection",
+                        "name": "reason",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RegistrationsCheckResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update registration status",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "健康检查",
@@ -228,6 +282,225 @@ const docTemplate = `{
                         "description": "内部服务器错误",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/registration": {
+            "get": {
+                "description": "status 和 location放在quaty param中",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "registrations"
+                ],
+                "summary": "Get registrations based on status and location",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Status of the registration",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Location of the registration",
+                        "name": "location",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.RegistrationsResp"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "get registration from db error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "编辑registration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "EditRegistration"
+                ],
+                "summary": "编辑registration",
+                "parameters": [
+                    {
+                        "description": "Registration 信息",
+                        "name": "registration",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RegistrationsEditReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功编辑registration",
+                        "schema": {
+                            "$ref": "#/definitions/model.RegistrationsEditReq"
+                        }
+                    }
+                }
+            }
+        },
+        "/registration/:id": {
+            "delete": {
+                "description": "删除指定id的registration",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "DeleteRegistration"
+                ],
+                "summary": "删除指定id的registration",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功删除registration",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/registration/batch_delete": {
+            "delete": {
+                "description": "批量删除提供的所有注册信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DelBatchRegistrations"
+                ],
+                "summary": "批量删除注册信息",
+                "parameters": [
+                    {
+                        "description": "需要删除的注册信息ID列表",
+                        "name": "delReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RegistrationsDelBatchReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功删除所有选中注册信息",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/registration/initregistration": {
+            "post": {
+                "description": "Create a new registration entry with the provided data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "registrations"
+                ],
+                "summary": "Create a new registration",
+                "parameters": [
+                    {
+                        "description": "Registration data",
+                        "name": "registration",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Registrations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Registrations"
+                        }
+                    },
+                    "400": {
+                        "description": "get registration req error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "create registration to db error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/registrations": {
+            "get": {
+                "description": "获取数据库中所有注册信息记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Registration"
+                ],
+                "summary": "获取所有注册信息",
+                "responses": {
+                    "200": {
+                        "description": "成功获取所有注册信息",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.RegistrationsResp"
+                            }
                         }
                     }
                 }
@@ -749,6 +1022,136 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "model.Registrations": {
+            "type": "object"
+        },
+        "model.RegistrationsCheckResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.RegistrationsDelBatchReq": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "主键列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "model.RegistrationsEditReq": {
+            "type": "object"
+        },
+        "model.RegistrationsResp": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "annual_income": {
+                    "type": "string"
+                },
+                "asset_status": {
+                    "type": "string"
+                },
+                "bride_price": {
+                    "type": "string"
+                },
+                "channel": {
+                    "type": "string"
+                },
+                "distance": {
+                    "type": "string"
+                },
+                "education": {
+                    "type": "string"
+                },
+                "expect_help": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "live_together": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "looking_for": {
+                    "type": "string"
+                },
+                "marriage_certificate": {
+                    "type": "string"
+                },
+                "marriage_history": {
+                    "type": "string"
+                },
+                "married_life": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "need_child": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "profession": {
+                    "type": "string"
+                },
+                "qualifications": {
+                    "type": "string"
+                },
+                "registrationscol": {
+                    "type": "string"
+                },
+                "residence": {
+                    "type": "string"
+                },
+                "self_description": {
+                    "type": "string"
+                },
+                "sexual_orientation": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "wechat": {
+                    "type": "string"
+                },
+                "wedding_mode": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
                 }
             }
         },

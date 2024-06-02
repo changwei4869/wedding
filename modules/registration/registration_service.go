@@ -10,7 +10,7 @@ import (
 )
 
 type IRegistrationsService interface {
-	All() (res response.PageResp, e error)
+	GetAll() (res response.PageResp, e error)
 	Count() (res map[string]interface{}, e error)
 	List(page response.PageReq, listReq model.RegistrationsListReq) (res response.PageResp, e error)
 	Detail(id int) (res model.RegistrationsResp, e error)
@@ -18,11 +18,12 @@ type IRegistrationsService interface {
 	Edit(editReq model.RegistrationsEditReq) (e error)
 	Change(changeReq model.RegistrationsDetailReq) (e error)
 	Del(id int) (e error)
+	Create(registration *model.Registrations)
 	DelBatch(delReq model.RegistrationsDelBatchReq) (e error)
 }
 
 // NewRegistrationsService 初始化
-func NewRegistrationsService(db *gorm.DB) IRegistrationsService {
+func NewRegistrationsService(db *gorm.DB) *registrationsService {
 	return &registrationsService{db: db}
 }
 
@@ -31,23 +32,50 @@ type registrationsService struct {
 	db *gorm.DB
 }
 
-// All registrations列表
-func (this registrationsService) All() (res response.PageResp, e error) {
-	// 数据
-	query := this.db.Model(&model.Registrations{})
-	var rows []model.Registrations
-	err := query.Order("id desc").Find(&rows).Error
-	if e = response.CheckErr(err, "registrations registrationsService  All Find err"); e != nil {
-		return
+// All retrieves all registrations and returns them in the RegistrationsResp format
+func (this registrationsService) GetAll() ([]model.RegistrationsResp, error) {
+	var registrations []model.Registrations
+	if err := this.db.Find(&registrations).Error; err != nil {
+		return nil, err
 	}
-	resps := []model.RegistrationsResp{}
-	response.CopyStruct(&resps, rows)
-	return response.PageResp{
-		PageNo:   0,
-		PageSize: 0,
-		Count:    0,
-		Data:     resps,
-	}, nil
+
+	var registrationsResp []model.RegistrationsResp
+	for _, registration := range registrations {
+		registrationsResp = append(registrationsResp, model.RegistrationsResp{
+			Id:                  registration.Id,
+			Number:              registration.Number,
+			Registrationscol:    registration.Registrationscol,
+			Name:                registration.Name,
+			Gender:              registration.Gender,
+			Phone:               registration.Phone,
+			Wechat:              registration.Wechat,
+			Age:                 registration.Age,
+			Height:              registration.Height,
+			Weight:              registration.Weight,
+			Location:            registration.Location,
+			Residence:           registration.Residence,
+			Education:           registration.Education,
+			Qualifications:      registration.Qualifications,
+			SexualOrientation:   registration.SexualOrientation,
+			MarriageHistory:     registration.MarriageHistory,
+			Profession:          registration.Profession,
+			AnnualIncome:        registration.AnnualIncome,
+			AssetStatus:         registration.AssetStatus,
+			SelfDescription:     registration.SelfDescription,
+			MarriageCertificate: registration.MarriageCertificate,
+			LiveTogether:        registration.LiveTogether,
+			NeedChild:           registration.NeedChild,
+			BridePrice:          registration.BridePrice,
+			Distance:            registration.Distance,
+			WeddingMode:         registration.WeddingMode,
+			MarriedLife:         registration.MarriedLife,
+			LookingFor:          registration.LookingFor,
+			ExpectHelp:          registration.ExpectHelp,
+			Channel:             registration.Channel,
+			Status:              registration.Status,
+		})
+	}
+	return registrationsResp, nil
 }
 
 // Count registrations
@@ -184,17 +212,38 @@ func (this registrationsService) List(page response.PageReq, listReq model.Regis
 }
 
 // Detail registrations详情
-func (this registrationsService) Detail(id int) (res model.RegistrationsResp, e error) {
-	var row model.Registrations
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
-	if e = response.ErrRecordNotFound(err, "registrations registrations  Detail ErrRecordNotFound!"); e != nil {
+func (this registrationsService) Detail(req model.RegistrationsDetailReq) (res []model.RegistrationsResp, e error) {
+	var rows []model.Registrations
+	query := this.db.Model(&model.Registrations{})
+
+	// 根据status和location查询
+	if req.Status != 0 {
+		query = query.Where("status = ?", req.Status)
+	}
+	if req.Location != "" {
+		query = query.Where("location = ?", req.Location)
+	}
+
+	err := query.Find(&rows).Error
+	if e = response.ErrRecordNotFound(err, "registrations Detail ErrRecordNotFound!"); e != nil {
 		return
 	}
-	if e = response.CheckErr(err, "registrations registrationsService  Detail First err"); e != nil {
+	if e = response.CheckErr(err, "registrationsService Detail Query err"); e != nil {
 		return
 	}
-	response.CopyStruct(&res, row)
+
+	// 将查询结果复制到响应结构体
+	for _, row := range rows {
+		var resp model.RegistrationsResp
+		response.CopyStruct(&resp, row)
+		res = append(res, resp)
+	}
+
 	return
+}
+
+func (this registrationsService) Create(registration *model.Registrations) error {
+	return this.db.Create(&registration).Error
 }
 
 // Add registrations新增
