@@ -1,12 +1,21 @@
 package model
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 type Admins struct {
-	Id       int    `gorm:"primarykey;comment:''" json:"id"`
-	Name     string `json:"name"`
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
-	Role_id  int    `json:"role_id"`
-	Status   int    `json:"status"`
+	Id        int            `gorm:"primarykey;comment:''" json:"id"`
+	Name      string         `json:"name"`
+	Phone     string         `json:"phone"`
+	Password  string         `json:"password"`
+	Role_id   int            `json:"role_id"`
+	Status    int            `json:"status"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }
 
 type AdminListReq struct {
