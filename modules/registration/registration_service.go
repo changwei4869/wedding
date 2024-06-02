@@ -18,6 +18,7 @@ type IRegistrationsService interface {
 	Edit(editReq model.RegistrationsEditReq) (e error)
 	Change(changeReq model.RegistrationsDetailReq) (e error)
 	Del(id int) (e error)
+	Create(registration *model.Registrations)
 	DelBatch(delReq model.RegistrationsDelBatchReq) (e error)
 }
 
@@ -239,6 +240,10 @@ func (this registrationsService) Detail(req model.RegistrationsDetailReq) (res [
 	}
 
 	return
+}
+
+func (this registrationsService) Create(registration *model.Registrations) error {
+	return this.db.Create(&registration).Error
 }
 
 // Add registrations新增

@@ -56,12 +56,13 @@ func InitRouter() {
 		api.PUT("/site", site.EditSite)
 		api.GET("/site", site.GetAllSites)
 		//registration
-		api.GET("/registration/getregistration", registration.GetRegistration)
-		api.GET("/registration", registration.GetAllRegistrations)
+		api.GET("/registration", registration.GetRegistration)
+		api.GET("/registrations", registration.GetAllRegistrations) //
 		api.DELETE("/registration/:id", registration.DeleteRegistration)
-		api.PUT("/registration", registration.EditRegistration)
+		api.PUT("/registration", registration.EditRegistration) //
 		api.POST("/registration/checkregistration", registration.CheckRegistration)
-		api.DELETE("/registration/batch_delete", registration.DelBatchRegistrations)
+		api.POST("/registration", registration.InitRegistration)        //
+		api.DELETE("/registration", registration.DelBatchRegistrations) //
 	}
 
 	r.Use(middleware.Logger())

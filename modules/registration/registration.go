@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/changwei4869/wedding/model"
 	"github.com/changwei4869/wedding/modules/db"
@@ -11,7 +12,7 @@ import (
 )
 
 // @Summary Get registrations based on status and location
-// @Description Get registrations by status and location
+// @Description status 和 location放在quaty param中
 // @Tags registrations
 // @Accept json
 // @Produce json
@@ -20,20 +21,64 @@ import (
 // @Success 200 {array} model.RegistrationsResp
 // @Failure 400 {string} string "Invalid request parameters"
 // @Failure 500 {string} string "get registration from db error"
-// @Router /getregistration [get]
+// @Router /registration [get]
 func GetRegistration(c *gin.Context) {
-	var req model.RegistrationsDetailReq
-	if err := c.ShouldBind(&req); err != nil {
-		c.String(http.StatusBadRequest, "Invalid request parameters")
-		return
+	statusstr := c.Query("status")  // 获取status查询参数
+	location := c.Query("location") // 获取location查询参数
+
+	// 将 status 从字符串转换为整数
+	var status int
+	var err error
+	if statusstr != "" {
+		status, err = strconv.Atoi(statusstr)
+		if err != nil {
+			c.String(http.StatusBadRequest, "Invalid request parameters: status must be an integer")
+			return
+		}
 	}
 
+	var req model.RegistrationsDetailReq
+	req.Status = status
+	req.Location = location
+
+	// 调用服务获取注册信息
 	registrations, err := NewRegistrationsService(db.GetDb()).Detail(req)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("get registration from db error: %s", err))
 		return
 	}
 	c.JSON(http.StatusOK, registrations)
+}
+
+// InitRegistration 创建新的registration
+// @Summary Create a new registration
+// @Description Create a new registration entry with the provided data
+// @Tags registrations
+// @Accept json
+// @Produce json
+// @Param registration body model.Registrations true "Registration data"
+// @Success 200 {object} model.Registrations
+// @Failure 400 {string} string "get registration req error"
+// @Failure 500 {string} string "create registration to db error"
+// @Router /registration/initregistration [post]
+func InitRegistration(c *gin.Context) {
+	var registration model.Registrations
+	if err := c.ShouldBindJSON(&registration); err != nil {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("get registration req error: %s", err))
+		return
+	}
+
+	// 设置创建时间和更新时间
+	registration.CreatedAt = time.Now()
+	registration.UpdatedAt = time.Now()
+
+	// 插入数据库
+	if err := NewRegistrationsService(db.GetDb()).Create(&registration); err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf("create registration to db error: %s", err))
+		return
+	}
+
+	c.JSON(http.StatusOK, registration)
 }
 
 // GetAllRegistrations 获取数据库中所有注册信息
@@ -43,7 +88,7 @@ func GetRegistration(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {array} model.RegistrationsResp "成功获取所有注册信息"
-// @Router /registration [get]
+// @Router /registrations [get]
 func GetAllRegistrations(c *gin.Context) {
 	registrations, err := NewRegistrationsService(db.GetDb()).GetAll()
 	if err != nil {
@@ -138,7 +183,7 @@ func CheckRegistration(c *gin.Context) {
 		})
 		return
 	}
-	//保存状态更改
+
 	registration.Status = req.Status
 	registration.Reason = req.Reason
 

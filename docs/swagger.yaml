@@ -44,6 +44,8 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.Registrations:
+    type: object
   model.RegistrationsCheckResp:
     properties:
       message:
@@ -62,77 +64,6 @@ definitions:
     - ids
     type: object
   model.RegistrationsEditReq:
-    properties:
-      age:
-        type: integer
-      annual_income:
-        type: string
-      asset_status:
-        type: string
-      bride_price:
-        type: string
-      channel:
-        type: string
-      created_at:
-        type: string
-      deleted_at:
-        type: string
-      distance:
-        type: string
-      education:
-        type: string
-      expect_help:
-        type: string
-      gender:
-        type: integer
-      height:
-        type: integer
-      id:
-        type: integer
-      live_together:
-        type: string
-      location:
-        type: string
-      looking_for:
-        type: string
-      marriage_certificate:
-        type: string
-      marriage_history:
-        type: string
-      married_life:
-        type: string
-      name:
-        type: string
-      need_child:
-        type: string
-      number:
-        type: string
-      phone:
-        type: string
-      profession:
-        type: string
-      qualifications:
-        type: string
-      reason:
-        type: string
-      registrationscol:
-        type: string
-      residence:
-        type: string
-      self_description:
-        type: string
-      sexual_orientation:
-        type: string
-      status:
-        type: integer
-      updated_at:
-        type: string
-      wechat:
-        type: string
-      wedding_mode:
-        type: string
-      weight:
-        type: integer
     type: object
   model.RegistrationsResp:
     properties:
@@ -434,40 +365,6 @@ paths:
       summary: Check registration
       tags:
       - registrations
-  /getregistration:
-    get:
-      consumes:
-      - application/json
-      description: Get registrations by status and location
-      parameters:
-      - description: Status of the registration
-        in: query
-        name: status
-        type: integer
-      - description: Location of the registration
-        in: query
-        name: location
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.RegistrationsResp'
-            type: array
-        "400":
-          description: Invalid request parameters
-          schema:
-            type: string
-        "500":
-          description: get registration from db error
-          schema:
-            type: string
-      summary: Get registrations based on status and location
-      tags:
-      - registrations
   /health:
     get:
       consumes:
@@ -506,19 +403,36 @@ paths:
     get:
       consumes:
       - application/json
-      description: 获取数据库中所有注册信息记录
+      description: status 和 location放在quaty param中
+      parameters:
+      - description: Status of the registration
+        in: query
+        name: status
+        type: integer
+      - description: Location of the registration
+        in: query
+        name: location
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: 成功获取所有注册信息
+          description: OK
           schema:
             items:
               $ref: '#/definitions/model.RegistrationsResp'
             type: array
-      summary: 获取所有注册信息
+        "400":
+          description: Invalid request parameters
+          schema:
+            type: string
+        "500":
+          description: get registration from db error
+          schema:
+            type: string
+      summary: Get registrations based on status and location
       tags:
-      - Registration
+      - registrations
     put:
       consumes:
       - application/json
@@ -581,6 +495,53 @@ paths:
       summary: 批量删除注册信息
       tags:
       - DelBatchRegistrations
+  /registration/initregistration:
+    post:
+      consumes:
+      - application/json
+      description: Create a new registration entry with the provided data
+      parameters:
+      - description: Registration data
+        in: body
+        name: registration
+        required: true
+        schema:
+          $ref: '#/definitions/model.Registrations'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Registrations'
+        "400":
+          description: get registration req error
+          schema:
+            type: string
+        "500":
+          description: create registration to db error
+          schema:
+            type: string
+      summary: Create a new registration
+      tags:
+      - registrations
+  /registrations:
+    get:
+      consumes:
+      - application/json
+      description: 获取数据库中所有注册信息记录
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取所有注册信息
+          schema:
+            items:
+              $ref: '#/definitions/model.RegistrationsResp'
+            type: array
+      summary: 获取所有注册信息
+      tags:
+      - Registration
   /role:
     get:
       description: 列出所有角色

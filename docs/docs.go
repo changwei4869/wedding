@@ -235,58 +235,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/getregistration": {
-            "get": {
-                "description": "Get registrations by status and location",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "registrations"
-                ],
-                "summary": "Get registrations based on status and location",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Status of the registration",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Location of the registration",
-                        "name": "location",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.RegistrationsResp"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request parameters",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "get registration from db error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/health": {
             "get": {
                 "description": "健康检查",
@@ -341,7 +289,7 @@ const docTemplate = `{
         },
         "/registration": {
             "get": {
-                "description": "获取数据库中所有注册信息记录",
+                "description": "status 和 location放在quaty param中",
                 "consumes": [
                     "application/json"
                 ],
@@ -349,17 +297,43 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Registration"
+                    "registrations"
                 ],
-                "summary": "获取所有注册信息",
+                "summary": "Get registrations based on status and location",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Status of the registration",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Location of the registration",
+                        "name": "location",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "成功获取所有注册信息",
+                        "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/model.RegistrationsResp"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "get registration from db error",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -455,6 +429,78 @@ const docTemplate = `{
                         "description": "成功删除所有选中注册信息",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/registration/initregistration": {
+            "post": {
+                "description": "Create a new registration entry with the provided data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "registrations"
+                ],
+                "summary": "Create a new registration",
+                "parameters": [
+                    {
+                        "description": "Registration data",
+                        "name": "registration",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Registrations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Registrations"
+                        }
+                    },
+                    "400": {
+                        "description": "get registration req error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "create registration to db error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/registrations": {
+            "get": {
+                "description": "获取数据库中所有注册信息记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Registration"
+                ],
+                "summary": "获取所有注册信息",
+                "responses": {
+                    "200": {
+                        "description": "成功获取所有注册信息",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.RegistrationsResp"
+                            }
                         }
                     }
                 }
@@ -979,6 +1025,9 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Registrations": {
+            "type": "object"
+        },
         "model.RegistrationsCheckResp": {
             "type": "object",
             "properties": {
@@ -1006,114 +1055,7 @@ const docTemplate = `{
             }
         },
         "model.RegistrationsEditReq": {
-            "type": "object",
-            "properties": {
-                "age": {
-                    "type": "integer"
-                },
-                "annual_income": {
-                    "type": "string"
-                },
-                "asset_status": {
-                    "type": "string"
-                },
-                "bride_price": {
-                    "type": "string"
-                },
-                "channel": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "distance": {
-                    "type": "string"
-                },
-                "education": {
-                    "type": "string"
-                },
-                "expect_help": {
-                    "type": "string"
-                },
-                "gender": {
-                    "type": "integer"
-                },
-                "height": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "live_together": {
-                    "type": "string"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "looking_for": {
-                    "type": "string"
-                },
-                "marriage_certificate": {
-                    "type": "string"
-                },
-                "marriage_history": {
-                    "type": "string"
-                },
-                "married_life": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "need_child": {
-                    "type": "string"
-                },
-                "number": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "profession": {
-                    "type": "string"
-                },
-                "qualifications": {
-                    "type": "string"
-                },
-                "reason": {
-                    "type": "string"
-                },
-                "registrationscol": {
-                    "type": "string"
-                },
-                "residence": {
-                    "type": "string"
-                },
-                "self_description": {
-                    "type": "string"
-                },
-                "sexual_orientation": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "wechat": {
-                    "type": "string"
-                },
-                "wedding_mode": {
-                    "type": "string"
-                },
-                "weight": {
-                    "type": "integer"
-                }
-            }
+            "type": "object"
         },
         "model.RegistrationsResp": {
             "type": "object",
