@@ -14,7 +14,7 @@ import (
 // GetTagById 根据id获取tag
 // @summary 根据id获取tag
 // @description 根据id获取tag
-// @tags GetTagById
+// @tags tag
 // @param id path string true "id"
 // @produce application/json
 // @success 200 {object} model.TagsResp "成功获取tag"
@@ -43,7 +43,7 @@ func GetTagById(c *gin.Context) {
 // GetAllTags 获取数据库中所有标签
 // @Summary 获取所有标签
 // @Description 获取数据库中所有标签记录
-// @Tags Tag
+// @Tags tag
 // @Accept json
 // @Produce json
 // @Success 200 {array} model.TagsResp "成功获取所有标签"
@@ -66,7 +66,7 @@ func GetAllTags(c *gin.Context) {
 // AddTag 添加新tag
 // @summary 添加新tag
 // @description 添加新tag
-// @tags AddTag
+// @tags tag
 // @accept application/json
 // @produce application/json
 // @param tag body model.TagsAddReq true "Tag 信息"
@@ -91,7 +91,7 @@ func AddTag(c *gin.Context) {
 // DeleteTag 删除指定id的tag
 // @summary 删除指定id的tag
 // @description 删除指定id的tag
-// @tags DeleteTag
+// @tags tag
 // @param id path string true "id"
 // @produce text/plain
 // @success 200 {string} string "成功删除tag"
@@ -120,7 +120,7 @@ func DeleteTag(c *gin.Context) {
 // EditTag 编辑tag
 // @summary 编辑tag
 // @description 编辑tag
-// @tags EditTag
+// @tags tag
 // @accept application/json
 // @produce application/json
 // @param tag body model.TagsEditReq true "Tag 信息"

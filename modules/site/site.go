@@ -14,7 +14,7 @@ import (
 // GetSiteById 根据id获取site
 // @summary 根据id获取site
 // @description 根据id获取site
-// @tags GetSiteById
+// @tags site
 // @param id path string true "id"
 // @produce application/json
 // @success 200 {object} model.SitesResp "成功获取site"
@@ -43,7 +43,7 @@ func GetSiteById(c *gin.Context) {
 // AddSite 添加新site
 // @summary 添加新site
 // @description 添加新site
-// @tags AddSite
+// @tags site
 // @accept application/json
 // @produce application/json
 // @param site body model.SitesAddReq true "Site 信息"
@@ -68,7 +68,7 @@ func AddSite(c *gin.Context) {
 // DeleteSite 删除指定id的site
 // @summary 删除指定id的site。
 // @description 删除指定id的site
-// @tags DeleteSite
+// @tags site
 // @param id path string true "id"
 // @produce text/plain
 // @success 200 {string} string "成功删除site"
@@ -97,7 +97,7 @@ func DeleteSite(c *gin.Context) {
 // GetAllSites 从数据库中获取所有站点记录
 // @Summary 获取所有站点
 // @Description 从数据库中获取所有站点记录
-// @Tags Site
+// @Tags site
 // @Accept json
 // @Produce json
 // @Success 200 {array} model.SitesResp "成功获取所有站点"
@@ -114,7 +114,7 @@ func GetAllSites(c *gin.Context) {
 // EditSite 编辑site
 // @summary 编辑site
 // @description 编辑site
-// @tags EditSite
+// @tags site
 // @accept application/json
 // @produce application/json
 // @param site body model.SitesEditReq true "Site 信息"

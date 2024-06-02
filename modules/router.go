@@ -21,13 +21,16 @@ import (
 func InitRouter() {
 	gin.SetMode(utils.AppMode)
 	r := gin.Default()
+	r.Use(gin.Recovery())
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	api := r.Group("/api", middleware.Cors())
+	// health
+	r.GET("/api/health", health.HealthCheck)
+	r.POST("/api/admin/login", middleware.Cors(), admin.AdminLogin)
+
+	api := r.Group("/api", middleware.Logger(), middleware.JwtToken(), middleware.Cors())
 	{
-		// health
-		api.GET("/health", health.HealthCheck)
 		// tag
 		api.GET("/tag/:id", tag.GetTagById)
 		api.GET("/tag", tag.GetAllTags)
@@ -47,7 +50,6 @@ func InitRouter() {
 		api.POST("/admin", admin.AddAdmin)
 		api.DELETE("/admin/:id", admin.DeleteAdmin)
 		api.PUT("/admin", admin.EditAdmin)
-		api.POST("/admin/login", admin.AdminLogin)
 		//permission
 		api.GET("/permissions", permission.ListPermission)
 		// site
@@ -65,10 +67,6 @@ func InitRouter() {
 		api.POST("/registration", registration.InitRegistration)        //
 		api.DELETE("/registration", registration.DelBatchRegistrations) //
 	}
-
-	r.Use(middleware.Logger())
-	r.Use(gin.Recovery())
-
 	_ = r.Run(utils.HttpPort)
 
 }

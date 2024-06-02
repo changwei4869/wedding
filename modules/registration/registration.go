@@ -60,7 +60,7 @@ func GetRegistration(c *gin.Context) {
 // @Success 200 {object} model.Registrations
 // @Failure 400 {string} string "get registration req error"
 // @Failure 500 {string} string "create registration to db error"
-// @Router /registration/initregistration [post]
+// @Router /registration [post]
 func InitRegistration(c *gin.Context) {
 	var registration model.Registrations
 	if err := c.ShouldBindJSON(&registration); err != nil {
@@ -84,7 +84,7 @@ func InitRegistration(c *gin.Context) {
 // GetAllRegistrations 获取数据库中所有注册信息
 // @Summary 获取所有注册信息
 // @Description 获取数据库中所有注册信息记录
-// @Tags Registration
+// @Tags registrations
 // @Accept json
 // @Produce json
 // @Success 200 {array} model.RegistrationsResp "成功获取所有注册信息"
@@ -101,7 +101,7 @@ func GetAllRegistrations(c *gin.Context) {
 // DeleteRegistration 删除指定id的registration
 // @summary 删除指定id的registration
 // @description 删除指定id的registration
-// @tags DeleteRegistration
+// @tags registrations
 // @param id path string true "id"
 // @produce text/plain
 // @success 200 {string} string "成功删除registration"
@@ -130,7 +130,7 @@ func DeleteRegistration(c *gin.Context) {
 // EditRegistration 编辑registration
 // @summary 编辑registration
 // @description 编辑registration
-// @tags EditRegistration
+// @tags registrations
 // @accept application/json
 // @produce application/json
 // @param registration body model.RegistrationsEditReq true "Registration 信息"
@@ -163,7 +163,7 @@ func EditRegistration(c *gin.Context) {
 // @Success 200 {object} model.RegistrationsCheckResp
 // @Failure 400 {string} string "Invalid request parameters"
 // @Failure 500 {string} string "Failed to update registration status"
-// @Router /checkregistration [post]
+// @Router /registration/checkregistration [post]
 func CheckRegistration(c *gin.Context) {
 	var req model.RegistrationsCheckReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -242,12 +242,12 @@ func CheckRegistration(c *gin.Context) {
 // DelBatchRegistrations 批量删除注册信息
 // @summary 批量删除注册信息
 // @description 批量删除提供的所有注册信息
-// @tags DelBatchRegistrations
+// @tags registrations
 // @accept application/json
 // @produce application/json
 // @param delReq body model.RegistrationsDelBatchReq true "需要删除的注册信息ID列表"
 // @success 200 {string} string "成功删除所有选中注册信息"
-// @router /registration/batch_delete [delete]
+// @router /registration [delete]
 func DelBatchRegistrations(c *gin.Context) {
 	var delReq model.RegistrationsDelBatchReq
 	if err := c.BindJSON(&delReq); err != nil {

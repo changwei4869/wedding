@@ -15,7 +15,7 @@ import (
 // ListRole 列出所有角色
 // @summary 列出所有角色
 // @description 列出所有角色
-// @tags ListRole
+// @tags role
 // @produce application/json
 // @param pageNo query int false "页码"
 // @param pageSize query int false "每页数量"
@@ -67,7 +67,7 @@ func ListRole(c *gin.Context) {
 // AddRole 添加新角色
 // @summary 添加新角色
 // @description 添加新角色
-// @tags AddRole
+// @tags role
 // @accept application/json
 // @produce application/json
 // @param role body model.RolesAddReq true "Role 信息"
@@ -91,7 +91,7 @@ func AddRole(c *gin.Context) {
 // DeleteRole 删除指定id的角色
 // @summary 删除指定id的角色
 // @description 删除指定id的角色
-// @tags DeleteRole
+// @tags role
 // @param id path string true "id"
 // @produce text/plain
 // @success 200 {string} string "成功删除角色"
@@ -120,7 +120,7 @@ func DeleteRole(c *gin.Context) {
 // EditRole 编辑角色
 // @summary 编辑角色
 // @description 编辑角色
-// @tags EditRole
+// @tags role
 // @accept application/json
 // @produce application/json
 // @param role body model.RolesEditReq true "Role 信息"

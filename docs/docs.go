@@ -31,7 +31,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "ListAdmin"
+                    "admin"
                 ],
                 "summary": "列出所有管理员",
                 "parameters": [
@@ -96,7 +96,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "EditAdmin"
+                    "admin"
                 ],
                 "summary": "编辑管理员",
                 "parameters": [
@@ -128,7 +128,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AddAdmin"
+                    "admin"
                 ],
                 "summary": "添加新管理员",
                 "parameters": [
@@ -159,7 +159,7 @@ const docTemplate = `{
                     "text/plain"
                 ],
                 "tags": [
-                    "DeleteAdmin"
+                    "admin"
                 ],
                 "summary": "删除指定id的管理员",
                 "parameters": [
@@ -181,9 +181,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/checkregistration": {
+        "/admin/login": {
             "post": {
-                "description": "通过审核status值设为1，拒绝设为2。待审核为0",
+                "description": "管理员登陆",
                 "consumes": [
                     "application/json"
                 ],
@@ -191,43 +191,23 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "registrations"
+                    "admin"
                 ],
-                "summary": "Check registration",
+                "summary": "管理员登陆",
                 "parameters": [
                     {
-                        "description": "Registration ID",
-                        "name": "id",
+                        "description": "Admin 信息",
+                        "name": "admin",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "Reason for approval or rejection",
-                        "name": "reason",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.AdminLoginReq"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.RegistrationsCheckResp"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request parameters",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to update registration status",
+                        "description": "管理员成功登陆",
                         "schema": {
                             "type": "string"
                         }
@@ -265,7 +245,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "ListPermission"
+                    "permission"
                 ],
                 "summary": "展示所有权限",
                 "responses": {
@@ -347,7 +327,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "EditRegistration"
+                    "registrations"
                 ],
                 "summary": "编辑registration",
                 "parameters": [
@@ -369,72 +349,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/registration/:id": {
-            "delete": {
-                "description": "删除指定id的registration",
-                "produces": [
-                    "text/plain"
-                ],
-                "tags": [
-                    "DeleteRegistration"
-                ],
-                "summary": "删除指定id的registration",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功删除registration",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/registration/batch_delete": {
-            "delete": {
-                "description": "批量删除提供的所有注册信息",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "DelBatchRegistrations"
-                ],
-                "summary": "批量删除注册信息",
-                "parameters": [
-                    {
-                        "description": "需要删除的注册信息ID列表",
-                        "name": "delReq",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.RegistrationsDelBatchReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功删除所有选中注册信息",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/registration/initregistration": {
+            },
             "post": {
                 "description": "Create a new registration entry with the provided data",
                 "consumes": [
@@ -478,6 +393,121 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "批量删除提供的所有注册信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "registrations"
+                ],
+                "summary": "批量删除注册信息",
+                "parameters": [
+                    {
+                        "description": "需要删除的注册信息ID列表",
+                        "name": "delReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RegistrationsDelBatchReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功删除所有选中注册信息",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/registration/:id": {
+            "delete": {
+                "description": "删除指定id的registration",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "registrations"
+                ],
+                "summary": "删除指定id的registration",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功删除registration",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/registration/checkregistration": {
+            "post": {
+                "description": "通过审核status值设为1，拒绝设为2。待审核为0",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "registrations"
+                ],
+                "summary": "Check registration",
+                "parameters": [
+                    {
+                        "description": "Registration ID",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Reason for approval or rejection",
+                        "name": "reason",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RegistrationsCheckResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update registration status",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/registrations": {
@@ -490,7 +520,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Registration"
+                    "registrations"
                 ],
                 "summary": "获取所有注册信息",
                 "responses": {
@@ -513,7 +543,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "ListRole"
+                    "role"
                 ],
                 "summary": "列出所有角色",
                 "parameters": [
@@ -578,7 +608,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "EditRole"
+                    "role"
                 ],
                 "summary": "编辑角色",
                 "parameters": [
@@ -610,7 +640,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AddRole"
+                    "role"
                 ],
                 "summary": "添加新角色",
                 "parameters": [
@@ -641,7 +671,7 @@ const docTemplate = `{
                     "text/plain"
                 ],
                 "tags": [
-                    "DeleteRole"
+                    "role"
                 ],
                 "summary": "删除指定id的角色",
                 "parameters": [
@@ -673,7 +703,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Site"
+                    "site"
                 ],
                 "summary": "获取所有站点",
                 "responses": {
@@ -697,7 +727,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "EditSite"
+                    "site"
                 ],
                 "summary": "编辑site",
                 "parameters": [
@@ -729,7 +759,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AddSite"
+                    "site"
                 ],
                 "summary": "添加新site",
                 "parameters": [
@@ -760,7 +790,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "GetSiteById"
+                    "site"
                 ],
                 "summary": "根据id获取site",
                 "parameters": [
@@ -787,7 +817,7 @@ const docTemplate = `{
                     "text/plain"
                 ],
                 "tags": [
-                    "DeleteSite"
+                    "site"
                 ],
                 "summary": "删除指定id的site。",
                 "parameters": [
@@ -819,7 +849,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Tag"
+                    "tag"
                 ],
                 "summary": "获取所有标签",
                 "responses": {
@@ -843,7 +873,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "EditTag"
+                    "tag"
                 ],
                 "summary": "编辑tag",
                 "parameters": [
@@ -875,7 +905,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AddTag"
+                    "tag"
                 ],
                 "summary": "添加新tag",
                 "parameters": [
@@ -906,7 +936,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "GetTagById"
+                    "tag"
                 ],
                 "summary": "根据id获取tag",
                 "parameters": [
@@ -933,7 +963,7 @@ const docTemplate = `{
                     "text/plain"
                 ],
                 "tags": [
-                    "DeleteTag"
+                    "tag"
                 ],
                 "summary": "删除指定id的tag",
                 "parameters": [
@@ -997,6 +1027,17 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AdminLoginReq": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "model.HealthResp": {
             "type": "object",
             "properties": {
@@ -1026,7 +1067,111 @@ const docTemplate = `{
             }
         },
         "model.Registrations": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "annual_income": {
+                    "type": "string"
+                },
+                "asset_status": {
+                    "type": "string"
+                },
+                "bride_price": {
+                    "type": "string"
+                },
+                "channel": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "distance": {
+                    "type": "string"
+                },
+                "education": {
+                    "type": "string"
+                },
+                "expect_help": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "live_together": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "looking_for": {
+                    "type": "string"
+                },
+                "marriage_certificate": {
+                    "type": "string"
+                },
+                "marriage_history": {
+                    "type": "string"
+                },
+                "married_life": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "need_child": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "profession": {
+                    "type": "string"
+                },
+                "qualifications": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "registrationscol": {
+                    "type": "string"
+                },
+                "residence": {
+                    "type": "string"
+                },
+                "self_description": {
+                    "type": "string"
+                },
+                "sexual_orientation": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "wechat": {
+                    "type": "string"
+                },
+                "wedding_mode": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
         },
         "model.RegistrationsCheckResp": {
             "type": "object",
@@ -1055,7 +1200,111 @@ const docTemplate = `{
             }
         },
         "model.RegistrationsEditReq": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "annual_income": {
+                    "type": "string"
+                },
+                "asset_status": {
+                    "type": "string"
+                },
+                "bride_price": {
+                    "type": "string"
+                },
+                "channel": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "distance": {
+                    "type": "string"
+                },
+                "education": {
+                    "type": "string"
+                },
+                "expect_help": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "live_together": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "looking_for": {
+                    "type": "string"
+                },
+                "marriage_certificate": {
+                    "type": "string"
+                },
+                "marriage_history": {
+                    "type": "string"
+                },
+                "married_life": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "need_child": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "profession": {
+                    "type": "string"
+                },
+                "qualifications": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "registrationscol": {
+                    "type": "string"
+                },
+                "residence": {
+                    "type": "string"
+                },
+                "self_description": {
+                    "type": "string"
+                },
+                "sexual_orientation": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "wechat": {
+                    "type": "string"
+                },
+                "wedding_mode": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
         },
         "model.RegistrationsResp": {
             "type": "object",

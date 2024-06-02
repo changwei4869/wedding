@@ -16,10 +16,51 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// LoginAdmin 管理员登陆
+// @summary 管理员登陆
+// @description 管理员登陆
+// @tags admin
+// @accept application/json
+// @produce application/json
+// @param admin body model.AdminLoginReq true "Admin 信息"
+// @success 200 {string} string "管理员成功登陆"
+// @router /admin/login [post]
+func AdminLogin(c *gin.Context) {
+	login := model.AdminLoginReq{}
+	if err := c.BindJSON(&login); err != nil {
+		c.String(http.StatusBadRequest, "invalid JSON format")
+		return
+	}
+
+	admin, err := NewAdminsService(db.GetDb()).GetAdminByPhone(login.Phone)
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("error getting admin from db: %s", err))
+		return
+	}
+	if admin.Password != utils.ComputeMD5(login.Password) {
+		c.String(http.StatusUnauthorized, "password incorrect")
+		return
+	}
+	token, err := middleware.NewJWT().CreateToken(middleware.MyClaims{
+		Phone: login.Phone,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
+		},
+	})
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("error creating token: %s", err))
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"token":  token,
+	})
+}
+
 // ListAdmin 列出所有管理员
 // @summary 列出所有管理员
 // @description 列出所有管理员
-// @tags ListAdmin
+// @tags admin
 // @produce application/json
 // @param pageNo query int false "页码"
 // @param pageSize query int false "每页数量"
@@ -91,7 +132,7 @@ func ListAdmin(c *gin.Context) {
 // AddAdmin 添加新管理员
 // @summary 添加新管理员
 // @description 添加新管理员
-// @tags AddAdmin
+// @tags admin
 // @accept application/json
 // @produce application/json
 // @param admin body model.AdminAddReq true "Admin 信息"
@@ -116,7 +157,7 @@ func AddAdmin(c *gin.Context) {
 // DeleteAdmin 删除指定id的管理员
 // @summary 删除指定id的管理员
 // @description 删除指定id的管理员
-// @tags DeleteAdmin
+// @tags admin
 // @param id path string true "id"
 // @produce text/plain
 // @success 200 {string} string "成功删除管理员"
@@ -145,7 +186,7 @@ func DeleteAdmin(c *gin.Context) {
 // EditAdmin 编辑管理员
 // @summary 编辑管理员
 // @description 编辑管理员
-// @tags EditAdmin
+// @tags admin
 // @accept application/json
 // @produce application/json
 // @param admin body model.AdminEditReq true "Admin 信息"
@@ -164,36 +205,4 @@ func EditAdmin(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, updatedAdmin)
-}
-
-func AdminLogin(c *gin.Context) {
-	login := model.AdminLoginReq{}
-	if err := c.BindJSON(&login); err != nil {
-		c.String(http.StatusBadRequest, "invalid JSON format")
-		return
-	}
-
-	admin, err := NewAdminsService(db.GetDb()).GetAdminByPhone(login.Phone)
-	if err != nil {
-		c.String(http.StatusInternalServerError, fmt.Sprintf("error getting admin from db: %s", err))
-		return
-	}
-	if admin.Password != utils.ComputeMD5(login.Password) {
-		c.String(http.StatusUnauthorized, "password incorrect")
-		return
-	}
-	token, err := middleware.NewJWT().CreateToken(middleware.MyClaims{
-		Phone: login.Phone,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
-		},
-	})
-	if err != nil {
-		c.String(http.StatusInternalServerError, fmt.Sprintf("error creating token: %s", err))
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"status": "success",
-		"token":  token,
-	})
 }

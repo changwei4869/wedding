@@ -42,7 +42,7 @@ type Registrations struct {
 	Reason              string         `json:"reason"`
 	CreatedAt           time.Time      `json:"created_at"`
 	UpdatedAt           time.Time      `json:"updated_at"`
-	DeletedAt           gorm.DeletedAt `json:"deleted_at"`
+	DeletedAt           gorm.DeletedAt `json:"deleted_at" swaggerignore:"true"`
 }
 
 // Registrations 审核参数
@@ -94,7 +94,6 @@ type RegistrationsListReq struct {
 	Reason              string         `json:"reason"`
 	CreatedAt           time.Time      `json:"created_at" form:"created_at"`
 	UpdatedAt           time.Time      `json:"updated_at" form:"updated_at"`
-	DeletedAt           gorm.DeletedAt `json:"deleted_at" form:"deleted_at"`
 }
 
 // RegistrationsDetailReq registrations详情参数
@@ -144,7 +143,6 @@ type RegistrationsEditReq struct {
 	Reason              string         `json:"reason"`
 	CreatedAt           time.Time      `json:"created_at" form:"created_at"`
 	UpdatedAt           time.Time      `json:"updated_at" form:"updated_at"`
-	DeletedAt           gorm.DeletedAt `json:"deleted_at" form:"deleted_at"`
 }
 
 // RegistrationsDelReq registrations删除参数
