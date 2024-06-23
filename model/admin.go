@@ -19,7 +19,7 @@ type Admins struct {
 }
 
 type AdminListReq struct {
-	Id      int    `gorm:"primarykey;comment:''" json:"id"`
+	Id      int    `json:"id"`
 	Name    string `json:"name"`
 	Phone   string `json:"phone"`
 	Role_id int    `json:"role_id"`
@@ -27,7 +27,6 @@ type AdminListReq struct {
 }
 
 type AdminAddReq struct {
-	Id       int    `gorm:"primarykey;comment:''" json:"id"`
 	Name     string `json:"name"`
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
@@ -47,11 +46,14 @@ type AdminUpdatePwdReq struct {
 }
 
 type AdminResp struct {
-	Id      int    `gorm:"primarykey;comment:''" json:"id"`
-	Name    string `json:"name"`
-	Phone   string `json:"phone"`
-	Role_id int    `json:"role_id"`
-	Status  int    `json:"status"`
+	Id        int            `gorm:"primarykey;comment:''" json:"id"`
+	Name      string         `json:"name"`
+	Phone     string         `json:"phone"`
+	Role_id   int            `json:"role_id"`
+	Status    int            `json:"status"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }
 
 type AdminLoginReq struct {

@@ -1,8 +1,6 @@
 package site
 
 import (
-	"log"
-
 	"github.com/changwei4869/wedding/model"
 	"gorm.io/gorm"
 )
@@ -41,7 +39,6 @@ func (s *SiteService) GetAll() ([]model.SitesResp, error) {
 			Status: site.Status,
 		})
 	}
-	log.Println(sitesResp)
 
 	return sitesResp, nil
 }

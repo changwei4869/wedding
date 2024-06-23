@@ -2,8 +2,6 @@ basePath: /api
 definitions:
   model.AdminAddReq:
     properties:
-      id:
-        type: integer
       name:
         type: string
       password:
@@ -49,6 +47,35 @@ definitions:
       name:
         type: string
       updated_at:
+        type: string
+    type: object
+  model.QrCodes:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      qr_code:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.QrCodesAddReq:
+    properties:
+      location:
+        type: string
+      qr_code:
+        type: string
+    type: object
+  model.QrCodesEditReq:
+    properties:
+      id:
+        type: integer
+      location:
+        type: string
+      qr_code:
         type: string
     type: object
   model.Registrations:
@@ -276,16 +303,29 @@ definitions:
         type: integer
     type: object
   model.RolesAddReq:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      permission_ids:
+        items:
+          type: integer
+        type: array
     type: object
   model.RolesEditReq:
     properties:
       created_at:
+        type: string
+      deleted_at:
         type: string
       description:
         type: string
       id:
         type: integer
       name:
+        type: string
+      permission_ids:
         type: string
       updated_at:
         type: string
@@ -375,35 +415,6 @@ paths:
   /admin:
     get:
       description: 列出所有管理员
-      parameters:
-      - description: 页码
-        in: query
-        name: pageNo
-        type: integer
-      - description: 每页数量
-        in: query
-        name: pageSize
-        type: integer
-      - description: 管理员ID
-        in: query
-        name: id
-        type: integer
-      - description: 管理员名称
-        in: query
-        name: name
-        type: string
-      - description: 管理员邮箱
-        in: query
-        name: email
-        type: string
-      - description: 创建时间
-        in: query
-        name: createdAt
-        type: string
-      - description: 更新时间
-        in: query
-        name: updatedAt
-        type: string
       produces:
       - application/json
       responses:
@@ -512,7 +523,7 @@ paths:
       summary: 健康检查
       tags:
       - health
-  /permission:
+  /permissions:
     get:
       description: 展示数据库中权限表中的所有权限
       produces:
@@ -531,6 +542,64 @@ paths:
       summary: 展示所有权限
       tags:
       - permission
+  /qrcode:
+    post:
+      consumes:
+      - application/json
+      description: 添加新二维码
+      parameters:
+      - description: QrCode 信息
+        in: body
+        name: qrcode
+        required: true
+        schema:
+          $ref: '#/definitions/model.QrCodesAddReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 成功添加二维码
+          schema:
+            type: string
+      summary: 添加新二维码
+      tags:
+      - qrcode
+    put:
+      consumes:
+      - application/json
+      description: 编辑二维码
+      parameters:
+      - description: Qrcode 信息
+        in: body
+        name: qrcode
+        required: true
+        schema:
+          $ref: '#/definitions/model.QrCodesEditReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功编辑二维码
+          schema:
+            $ref: '#/definitions/model.QrCodesEditReq'
+      summary: 编辑二维码
+      tags:
+      - qrcode
+  /qrcodes:
+    get:
+      description: 列出所有二维码
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取所有二维码
+          schema:
+            items:
+              $ref: '#/definitions/model.QrCodes'
+            type: array
+      summary: 列出所有二维码
+      tags:
+      - qrcode
   /registration:
     delete:
       consumes:
@@ -710,35 +779,6 @@ paths:
   /role:
     get:
       description: 列出所有角色
-      parameters:
-      - description: 页码
-        in: query
-        name: pageNo
-        type: integer
-      - description: 每页数量
-        in: query
-        name: pageSize
-        type: integer
-      - description: 角色ID
-        in: query
-        name: id
-        type: integer
-      - description: 角色名称
-        in: query
-        name: name
-        type: string
-      - description: 角色描述
-        in: query
-        name: description
-        type: string
-      - description: 创建时间
-        in: query
-        name: createdAt
-        type: string
-      - description: 更新时间
-        in: query
-        name: updatedAt
-        type: string
       produces:
       - application/json
       responses:

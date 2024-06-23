@@ -7,6 +7,7 @@ import (
 	"github.com/changwei4869/wedding/modules/file"
 	"github.com/changwei4869/wedding/modules/health"
 	"github.com/changwei4869/wedding/modules/permission"
+	qrcode "github.com/changwei4869/wedding/modules/qr_code"
 	"github.com/changwei4869/wedding/modules/registration"
 	"github.com/changwei4869/wedding/modules/role"
 	"github.com/changwei4869/wedding/modules/site"
@@ -60,12 +61,16 @@ func InitRouter() {
 		api.GET("/site", site.GetAllSites)
 		//registration
 		api.GET("/registration", registration.GetRegistration)
-		api.GET("/registrations", registration.GetAllRegistrations) //
+		api.GET("/registrations", registration.GetAllRegistrations)
 		api.DELETE("/registration/:id", registration.DeleteRegistration)
-		api.PUT("/registration", registration.EditRegistration) //
+		api.PUT("/registration", registration.EditRegistration)
 		api.POST("/registration/checkregistration", registration.CheckRegistration)
-		api.POST("/registration", registration.InitRegistration)        //
-		api.DELETE("/registration", registration.DelBatchRegistrations) //
+		api.POST("/registration", registration.InitRegistration)
+		api.DELETE("/registration", registration.DelBatchRegistrations)
+		// qrcode
+		api.GET("/qrcodes", qrcode.GetAllQrCode)
+		api.POST("/qrcode", qrcode.AddQrCode)
+		api.PUT("/qrcode", qrcode.EditQrCode)
 	}
 	_ = r.Run(utils.HttpPort)
 

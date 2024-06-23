@@ -15,7 +15,7 @@ import (
 // @Produce application/json
 // @Success 200 {array} model.PermissionsListReq "成功获取权限列表"
 // @Failure 500 {string} string "内部服务器错误"
-// @Router /permission [get]
+// @Router /permissions [get]
 func ListPermission(c *gin.Context) {
 	permissions, err := NewPermissionService(db.GetDb()).ListAll()
 	if err != nil {

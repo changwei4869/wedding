@@ -34,50 +34,6 @@ const docTemplate = `{
                     "admin"
                 ],
                 "summary": "列出所有管理员",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "pageNo",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "管理员ID",
-                        "name": "id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "管理员名称",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "管理员邮箱",
-                        "name": "email",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "创建时间",
-                        "name": "createdAt",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "更新时间",
-                        "name": "updatedAt",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "成功获取所有管理员",
@@ -238,7 +194,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/permission": {
+        "/permissions": {
             "get": {
                 "description": "展示数据库中权限表中的所有权限",
                 "produces": [
@@ -262,6 +218,95 @@ const docTemplate = `{
                         "description": "内部服务器错误",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/qrcode": {
+            "put": {
+                "description": "编辑二维码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "qrcode"
+                ],
+                "summary": "编辑二维码",
+                "parameters": [
+                    {
+                        "description": "Qrcode 信息",
+                        "name": "qrcode",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.QrCodesEditReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功编辑二维码",
+                        "schema": {
+                            "$ref": "#/definitions/model.QrCodesEditReq"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "添加新二维码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "qrcode"
+                ],
+                "summary": "添加新二维码",
+                "parameters": [
+                    {
+                        "description": "QrCode 信息",
+                        "name": "qrcode",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.QrCodesAddReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "成功添加二维码",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/qrcodes": {
+            "get": {
+                "description": "列出所有二维码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "qrcode"
+                ],
+                "summary": "列出所有二维码",
+                "responses": {
+                    "200": {
+                        "description": "成功获取所有二维码",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.QrCodes"
+                            }
                         }
                     }
                 }
@@ -546,50 +591,6 @@ const docTemplate = `{
                     "role"
                 ],
                 "summary": "列出所有角色",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "pageNo",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "角色ID",
-                        "name": "id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "角色名称",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "角色描述",
-                        "name": "description",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "创建时间",
-                        "name": "createdAt",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "更新时间",
-                        "name": "updatedAt",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "成功获取所有角色",
@@ -990,9 +991,6 @@ const docTemplate = `{
         "model.AdminAddReq": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -1062,6 +1060,51 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.QrCodes": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "qr_code": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.QrCodesAddReq": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "type": "string"
+                },
+                "qr_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.QrCodesEditReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "qr_code": {
                     "type": "string"
                 }
             }
@@ -1405,12 +1448,29 @@ const docTemplate = `{
             }
         },
         "model.RolesAddReq": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "permission_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
         },
         "model.RolesEditReq": {
             "type": "object",
             "properties": {
                 "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "description": {
@@ -1420,6 +1480,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "permission_ids": {
                     "type": "string"
                 },
                 "updated_at": {

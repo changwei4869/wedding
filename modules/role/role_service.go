@@ -3,6 +3,7 @@ package role
 import (
 	"errors"
 	"strconv"
+	"strings"
 
 	"github.com/changwei4869/wedding/model"
 	"github.com/changwei4869/wedding/utils/response"
@@ -10,7 +11,7 @@ import (
 )
 
 type IRolesService interface {
-	All() (res response.PageResp, e error)
+	All() (res []model.Roles, e error)
 	Count() (res map[string]interface{}, e error)
 	List(page response.PageReq, listReq model.RolesListReq) (res response.PageResp, e error)
 	Detail(id int) (res model.RolesResp, e error)
@@ -32,7 +33,7 @@ type rolesService struct {
 }
 
 // All roles列表
-func (this rolesService) All() (res response.PageResp, e error) {
+func (this rolesService) All() (res []model.Roles, e error) {
 	// 数据
 	query := this.db.Model(&model.Roles{})
 	var rows []model.Roles
@@ -40,14 +41,7 @@ func (this rolesService) All() (res response.PageResp, e error) {
 	if e = response.CheckErr(err, "roles rolesService  All Find err"); e != nil {
 		return
 	}
-	resps := []model.RolesResp{}
-	response.CopyStruct(&resps, rows)
-	return response.PageResp{
-		PageNo:   0,
-		PageSize: 0,
-		Count:    0,
-		Data:     resps,
-	}, nil
+	return rows, nil
 }
 
 // Count roles
@@ -80,12 +74,6 @@ func (this rolesService) List(page response.PageReq, listReq model.RolesListReq)
 	}
 	if listReq.Description != "" {
 		query = query.Where("description = ?", listReq.Description)
-	}
-	if len(listReq.CreatedAt) > 0 {
-		query = query.Where("created_at = ?", listReq.CreatedAt)
-	}
-	if len(listReq.UpdatedAt) > 0 {
-		query = query.Where("updated_at = ?", listReq.UpdatedAt)
 	}
 
 	// 总数
@@ -138,7 +126,13 @@ func (this rolesService) Detail(id int) (res model.RolesResp, e error) {
 // Add roles新增
 func (this rolesService) Add(addReq model.RolesAddReq) (e error) {
 	var row model.Roles
-	response.CopyStruct(&row, addReq)
+	var permissionIds []string
+	row.Name = addReq.Name
+	row.Description = addReq.Description
+	for _, id := range addReq.PermissionIds {
+		permissionIds = append(permissionIds, strconv.Itoa(id))
+	}
+	row.PermissionIds = strings.Join(permissionIds, ",")
 	err := this.db.Create(&row).Error
 	e = response.CheckErr(err, "roles rolesService  Add Create err")
 	return

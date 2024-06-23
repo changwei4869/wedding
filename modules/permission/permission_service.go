@@ -14,10 +14,10 @@ func NewPermissionService(db *gorm.DB) *PermissionService {
 }
 
 // ListAll 获取所有权限
-func (service *PermissionService) ListAll() ([]model.PermissionsListReq, error) {
-	var permissions []model.PermissionsListReq
-	err := service.db.Find(&permissions).Error
-	return permissions, err
+func (service *PermissionService) ListAll() ([]model.Permissions, error) {
+	var res []model.Permissions
+	err := service.db.Find(&res).Error
+	return res, err
 }
 
 // PermissionService 用于处理权限相关的数据库操作

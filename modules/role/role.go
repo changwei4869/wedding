@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/changwei4869/wedding/model"
-	"github.com/changwei4869/wedding/utils/response"
 
 	"github.com/changwei4869/wedding/modules/db"
 	"github.com/gin-gonic/gin"
@@ -17,46 +16,10 @@ import (
 // @description 列出所有角色
 // @tags role
 // @produce application/json
-// @param pageNo query int false "页码"
-// @param pageSize query int false "每页数量"
-// @param id query int false "角色ID"
-// @param name query string false "角色名称"
-// @param description query string false "角色描述"
-// @param createdAt query string false "创建时间"
-// @param updatedAt query string false "更新时间"
 // @success 200 {object} response.PageResp "成功获取所有角色"
 // @router /role [get]
 func ListRole(c *gin.Context) {
-	var pageReq response.PageReq
-	var listReq model.RolesListReq
-	var err error
-
-	pageNo := c.DefaultQuery("pageNo", "1")
-	pageSize := c.DefaultQuery("pageSize", "10")
-	pageReq.PageNo, err = strconv.Atoi(pageNo)
-	if err != nil {
-		c.String(http.StatusBadRequest, "pageNo is not a number")
-		return
-	}
-	pageReq.PageSize, err = strconv.Atoi(pageSize)
-	if err != nil {
-		c.String(http.StatusBadRequest, "pageSize is not a number")
-		return
-	}
-
-	if id := c.Query("id"); id != "" {
-		listReq.Id, err = strconv.Atoi(id)
-		if err != nil {
-			c.String(http.StatusBadRequest, "id is not a number")
-			return
-		}
-	}
-	listReq.Name = c.Query("name")
-	listReq.Description = c.Query("description")
-	listReq.CreatedAt = c.Query("createdAt")
-	listReq.UpdatedAt = c.Query("updatedAt")
-
-	res, err := NewRolesService(db.GetDb()).List(pageReq, listReq)
+	res, err := NewRolesService(db.GetDb()).All()
 	if err != nil {
 		c.String(http.StatusInternalServerError, "error fetching roles from db")
 		return

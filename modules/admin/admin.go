@@ -8,7 +8,6 @@ import (
 
 	"github.com/changwei4869/wedding/middleware"
 	"github.com/changwei4869/wedding/utils"
-	"github.com/changwei4869/wedding/utils/response"
 	"github.com/dgrijalva/jwt-go"
 
 	"github.com/changwei4869/wedding/model"
@@ -62,66 +61,10 @@ func AdminLogin(c *gin.Context) {
 // @description 列出所有管理员
 // @tags admin
 // @produce application/json
-// @param pageNo query int false "页码"
-// @param pageSize query int false "每页数量"
-// @param id query int false "管理员ID"
-// @param name query string false "管理员名称"
-// @param email query string false "管理员邮箱"
-// @param createdAt query string false "创建时间"
-// @param updatedAt query string false "更新时间"
 // @success 200 {object} response.PageResp "成功获取所有管理员"
 // @router /admin [get]
 func ListAdmin(c *gin.Context) {
-	var pageReq response.PageReq
-	var listReq model.AdminListReq
-	var err error
-
-	pageNo := c.DefaultQuery("pageNo", "1")
-	pageSize := c.DefaultQuery("pageSize", "10")
-	pageReq.PageNo, err = strconv.Atoi(pageNo)
-	if err != nil {
-		c.String(http.StatusBadRequest, "pageNo is not a number")
-		return
-	}
-	pageReq.PageSize, err = strconv.Atoi(pageSize)
-	if err != nil {
-		c.String(http.StatusBadRequest, "pageSize is not a number")
-		return
-	}
-
-	if id := c.Query("id"); id != "" {
-		listReq.Id, err = strconv.Atoi(id)
-		if err != nil {
-			c.String(http.StatusBadRequest, "id is not a number")
-			return
-		}
-	}
-	listReq.Name = c.Query("name")
-	listReq.Phone = c.Query("phone")
-	//listReq.Role_id = c.Query("role_id")
-	roleIDStr := c.Query("role_id")
-	if roleIDStr != "" {
-		roleID, err := strconv.Atoi(roleIDStr)
-		if err != nil {
-			// 处理字符串转换为整数错误
-			c.String(http.StatusInternalServerError, "failed string to int")
-			return
-		}
-		listReq.Role_id = roleID
-	}
-	//listReq.Status = c.Query("status")
-	statusStr := c.Query("status")
-	if statusStr != "" {
-		status, err := strconv.Atoi(statusStr)
-		if err != nil {
-			// 处理字符串转换为整数错误
-			c.String(http.StatusInternalServerError, "failed string to int")
-			return
-		}
-		listReq.Status = status
-	}
-
-	res, err := NewAdminsService(db.GetDb()).List(pageReq, listReq)
+	res, err := NewAdminsService(db.GetDb()).All()
 	if err != nil {
 		c.String(http.StatusInternalServerError, "error fetching admins from db")
 		return
