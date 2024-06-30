@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/changwei4869/wedding/model"
+	"github.com/changwei4869/wedding/modules/db"
 	"github.com/changwei4869/wedding/utils/response"
-	"gorm.io/gorm"
 )
 
 type IRolesService interface {
@@ -22,20 +22,15 @@ type IRolesService interface {
 	DelBatch(delReq model.RolesDelBatchReq) (e error)
 }
 
-// NewRolesService 初始化
-func NewRolesService(db *gorm.DB) IRolesService {
-	return &rolesService{db: db}
-}
-
 // rolesService roles
-type rolesService struct {
-	db *gorm.DB
-}
+type rolesService struct{}
+
+var RoleIns IRolesService = rolesService{}
 
 // All roles列表
 func (this rolesService) All() (res []model.Roles, e error) {
 	// 数据
-	query := this.db.Model(&model.Roles{})
+	query := db.GetDb().Model(&model.Roles{})
 	var rows []model.Roles
 	err := query.Order("id desc").Find(&rows).Error
 	if e = response.CheckErr(err, "roles rolesService  All Find err"); e != nil {
@@ -47,7 +42,7 @@ func (this rolesService) All() (res []model.Roles, e error) {
 // Count roles
 func (this rolesService) Count() (res map[string]interface{}, e error) {
 	var Count int64
-	query := this.db.Model(&model.Roles{})
+	query := db.GetDb().Model(&model.Roles{})
 	var rows []model.Roles
 	err := query.Find(&rows).Count(&Count).Error
 	if e = response.CheckErr(err, "roles rolesService  All Find err"); e != nil {
@@ -65,7 +60,7 @@ func (this rolesService) List(page response.PageReq, listReq model.RolesListReq)
 	offset := page.PageSize * (page.PageNo - 1)
 
 	// 查询
-	query := this.db.Model(&model.Roles{})
+	query := db.GetDb().Model(&model.Roles{})
 	if listReq.Id > 0 {
 		query = query.Where("id = ?", listReq.Id)
 	}
@@ -112,7 +107,7 @@ func (this rolesService) List(page response.PageReq, listReq model.RolesListReq)
 // Detail roles详情
 func (this rolesService) Detail(id int) (res model.RolesResp, e error) {
 	var row model.Roles
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", id).Limit(1).First(&row).Error
 	if e = response.ErrRecordNotFound(err, "roles roles  Detail ErrRecordNotFound!"); e != nil {
 		return
 	}
@@ -133,7 +128,7 @@ func (this rolesService) Add(addReq model.RolesAddReq) (e error) {
 		permissionIds = append(permissionIds, strconv.Itoa(id))
 	}
 	row.PermissionIds = strings.Join(permissionIds, ",")
-	err := this.db.Create(&row).Error
+	err := db.GetDb().Create(&row).Error
 	e = response.CheckErr(err, "roles rolesService  Add Create err")
 	return
 }
@@ -141,7 +136,7 @@ func (this rolesService) Add(addReq model.RolesAddReq) (e error) {
 // Edit roles编辑
 func (this rolesService) Edit(editReq model.RolesEditReq) (e error) {
 	var row model.Roles
-	err := this.db.Where("id = ?", editReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", editReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "roles rolesService Edit ErrRecordNotFound!"); e != nil {
 		return
@@ -151,14 +146,14 @@ func (this rolesService) Edit(editReq model.RolesEditReq) (e error) {
 	}
 	// 更新
 	response.CopyStruct(&row, editReq)
-	err = this.db.Model(&row).Updates(row).Error
+	err = db.GetDb().Model(&row).Updates(row).Error
 	e = response.CheckErr(err, "roles rolesService Edit Updates err")
 
 	//强制更新 当IsShow=0
-	//err = this.db.Model(&row).Select("IsShow").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("IsShow").Updates(row).Error
 	//e = response.CheckErr(err, "roles rolesService  Edit Updates err")
 	//强制更新 isDisable=0
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	//e = response.CheckErr(err, "roles rolesService  Edit Updates err")
 	return
 }
@@ -166,7 +161,7 @@ func (this rolesService) Edit(editReq model.RolesEditReq) (e error) {
 // Change roles 状态切换
 func (this rolesService) Change(changeReq model.RolesDetailReq) (e error) {
 	var row model.Roles
-	err := this.db.Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "roles rolesService Change ErrRecordNotFound!(id="+strconv.Itoa(int(changeReq.Id))+")"); e != nil {
 		return
@@ -175,9 +170,9 @@ func (this rolesService) Change(changeReq model.RolesDetailReq) (e error) {
 		return
 	}
 	// 更新
-	//err = this.db.Model(&row).Select("Enabled").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("Enabled").Updates(row).Error
 	//e = response.CheckErr(err, "广告 adService  Edit Updates err")
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	// e = response.CheckErr(err, "roles rolesService  Change Updates err")
 	return
 }
@@ -185,7 +180,7 @@ func (this rolesService) Change(changeReq model.RolesDetailReq) (e error) {
 // Del roles删除
 func (this rolesService) Del(id int) (e error) {
 	var row model.Roles
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "roles rolesService Del ErrRecordNotFound!"); e != nil {
 		return
@@ -194,7 +189,7 @@ func (this rolesService) Del(id int) (e error) {
 		return
 	}
 	// 删除
-	err = this.db.Delete(&row).Error
+	err = db.GetDb().Delete(&row).Error
 	e = response.CheckErr(err, "roles rolesService Del Delete err")
 	return
 }
@@ -208,7 +203,7 @@ func (this rolesService) DelBatch(delReq model.RolesDelBatchReq) (e error) {
 		return
 	}
 	// 执行批量删除
-	err := this.db.Where("id IN (?)", delReq.Ids).Delete(model.Roles{}).Error
+	err := db.GetDb().Where("id IN (?)", delReq.Ids).Delete(model.Roles{}).Error
 	// 检查并处理错误
 	e = response.CheckErr(err, "时间段 RolesService DelBatch Delete err")
 	return

@@ -42,7 +42,7 @@ func GetRegistration(c *gin.Context) {
 	req.Location = location
 
 	// 调用服务获取注册信息
-	registrations, err := NewRegistrationsService(db.GetDb()).Detail(req)
+	registrations, err := RegistrationIns.Detail(req)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("get registration from db error: %s", err))
 		return
@@ -73,7 +73,7 @@ func InitRegistration(c *gin.Context) {
 	registration.UpdatedAt = time.Now()
 
 	// 插入数据库
-	if err := NewRegistrationsService(db.GetDb()).Create(&registration); err != nil {
+	if err := RegistrationIns.Create(&registration); err != nil {
 		c.JSON(http.StatusInternalServerError, fmt.Sprintf("create registration to db error: %s", err))
 		return
 	}
@@ -90,7 +90,7 @@ func InitRegistration(c *gin.Context) {
 // @Success 200 {array} model.RegistrationsResp "成功获取所有注册信息"
 // @Router /registrations [get]
 func GetAllRegistrations(c *gin.Context) {
-	registrations, err := NewRegistrationsService(db.GetDb()).GetAll()
+	registrations, err := RegistrationIns.GetAll()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -118,7 +118,7 @@ func DeleteRegistration(c *gin.Context) {
 		c.String(http.StatusBadRequest, "id is not a number")
 		return
 	}
-	err = NewRegistrationsService(db.GetDb()).Del(registrationId)
+	err = RegistrationIns.Del(registrationId)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("delete registration from db error: %s", err))
 		return
@@ -143,7 +143,7 @@ func EditRegistration(c *gin.Context) {
 		return
 	}
 
-	err := NewRegistrationsService(db.GetDb()).Edit(updatedRegistration)
+	err := RegistrationIns.Edit(updatedRegistration)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error updating registration in db: %s", err))
 		return
@@ -260,7 +260,7 @@ func DelBatchRegistrations(c *gin.Context) {
 		return
 	}
 
-	if err := NewRegistrationsService(db.GetDb()).DelBatch(delReq); err != nil {
+	if err := RegistrationIns.DelBatch(delReq); err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error deleting registrations: %s", err))
 		return
 	}

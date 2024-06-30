@@ -7,7 +7,6 @@ import (
 
 	"github.com/changwei4869/wedding/model"
 
-	"github.com/changwei4869/wedding/modules/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +18,7 @@ import (
 // @success 200 {object} response.PageResp "成功获取所有角色"
 // @router /role [get]
 func ListRole(c *gin.Context) {
-	res, err := NewRolesService(db.GetDb()).All()
+	res, err := RoleIns.All()
 	if err != nil {
 		c.String(http.StatusInternalServerError, "error fetching roles from db")
 		return
@@ -43,7 +42,7 @@ func AddRole(c *gin.Context) {
 		return
 	}
 
-	if err := NewRolesService(db.GetDb()).Add(role); err != nil {
+	if err := RoleIns.Add(role); err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error adding role to db: %s", err))
 		return
 	}
@@ -71,7 +70,7 @@ func DeleteRole(c *gin.Context) {
 		c.String(http.StatusBadRequest, "id is not a number")
 		return
 	}
-	err = NewRolesService(db.GetDb()).Del(roleID)
+	err = RoleIns.Del(roleID)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("delete role from db error: %s", err))
 		return
@@ -95,7 +94,7 @@ func EditRole(c *gin.Context) {
 		c.String(http.StatusBadRequest, "invalid JSON format")
 		return
 	}
-	err := NewRolesService(db.GetDb()).Edit(updatedRole)
+	err := RoleIns.Edit(updatedRole)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error updating role in db: %s", err))
 		return

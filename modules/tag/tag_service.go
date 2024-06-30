@@ -5,12 +5,12 @@ import (
 	"strconv"
 
 	"github.com/changwei4869/wedding/model"
+	"github.com/changwei4869/wedding/modules/db"
 	"github.com/changwei4869/wedding/utils/response"
-	"gorm.io/gorm"
 )
 
 type ITagsService interface {
-	GetAll() (res response.PageResp, e error)
+	GetAll() ([]model.TagsResp, error)
 	Count() (res map[string]interface{}, e error)
 	List(page response.PageReq, listReq model.TagsListReq) (res response.PageResp, e error)
 	Detail(id int) (res model.TagsResp, e error)
@@ -22,19 +22,14 @@ type ITagsService interface {
 }
 
 // tagsService tags
-type tagsService struct {
-	db *gorm.DB
-}
+type tagsService struct{}
 
-// NewTagsService 初始化
-func NewTagsService(db *gorm.DB) *tagsService {
-	return &tagsService{db: db}
-}
+var TagIns ITagsService = tagsService{}
 
 // All tags列表
 func (this tagsService) GetAll() ([]model.TagsResp, error) {
 	var tags []model.Tags
-	if err := this.db.Find(&tags).Error; err != nil {
+	if err := db.GetDb().Find(&tags).Error; err != nil {
 		return nil, err
 	}
 
@@ -52,7 +47,7 @@ func (this tagsService) GetAll() ([]model.TagsResp, error) {
 // Count tags
 func (this tagsService) Count() (res map[string]interface{}, e error) {
 	var Count int64
-	query := this.db.Model(&model.Tags{})
+	query := db.GetDb().Model(&model.Tags{})
 	var rows []model.Tags
 	err := query.Find(&rows).Count(&Count).Error
 	if e = response.CheckErr(err, "tags tagsService  All Find err"); e != nil {
@@ -69,7 +64,7 @@ func (this tagsService) List(page response.PageReq, listReq model.TagsListReq) (
 	limit := page.PageSize
 	offset := page.PageSize * (page.PageNo - 1)
 	// 查询
-	query := this.db.Model(&model.Tags{})
+	query := db.GetDb().Model(&model.Tags{})
 	if listReq.Id > 0 {
 		query = query.Where("id = ?", listReq.Id)
 	}
@@ -111,7 +106,7 @@ func (this tagsService) List(page response.PageReq, listReq model.TagsListReq) (
 // Detail tags详情
 func (this tagsService) Detail(id int) (res model.TagsResp, e error) {
 	var row model.Tags
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", id).Limit(1).First(&row).Error
 	if e = response.ErrRecordNotFound(err, "tags tags  Detail ErrRecordNotFound!"); e != nil {
 		return
 	}
@@ -126,7 +121,7 @@ func (this tagsService) Detail(id int) (res model.TagsResp, e error) {
 func (this tagsService) Add(addReq model.TagsAddReq) (e error) {
 	var row model.Tags
 	response.CopyStruct(&row, addReq)
-	err := this.db.Create(&row).Error
+	err := db.GetDb().Create(&row).Error
 	e = response.CheckErr(err, "tags tagsService  Add Create err")
 	return
 }
@@ -134,7 +129,7 @@ func (this tagsService) Add(addReq model.TagsAddReq) (e error) {
 // Edit tags编辑
 func (this tagsService) Edit(editReq model.TagsEditReq) (e error) {
 	var row model.Tags
-	err := this.db.Where("id = ?", editReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", editReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "tags tagsService Edit ErrRecordNotFound!"); e != nil {
 		return
@@ -144,14 +139,14 @@ func (this tagsService) Edit(editReq model.TagsEditReq) (e error) {
 	}
 	// 更新
 	response.CopyStruct(&row, editReq)
-	err = this.db.Model(&row).Updates(row).Error
+	err = db.GetDb().Model(&row).Updates(row).Error
 	e = response.CheckErr(err, "tags tagsService Edit Updates err")
 
 	//强制更新 当IsShow=0
-	//err = this.db.Model(&row).Select("IsShow").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("IsShow").Updates(row).Error
 	//e = response.CheckErr(err, "tags tagsService  Edit Updates err")
 	//强制更新 isDisable=0
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	//e = response.CheckErr(err, "tags tagsService  Edit Updates err")
 	return
 }
@@ -159,7 +154,7 @@ func (this tagsService) Edit(editReq model.TagsEditReq) (e error) {
 // Change tags 状态切换
 func (this tagsService) Change(changeReq model.TagsDetailReq) (e error) {
 	var row model.Tags
-	err := this.db.Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "tags tagsService Change ErrRecordNotFound!(id="+strconv.Itoa(int(changeReq.Id))+")"); e != nil {
 		return
@@ -168,9 +163,9 @@ func (this tagsService) Change(changeReq model.TagsDetailReq) (e error) {
 		return
 	}
 	// 更新
-	//err = this.db.Model(&row).Select("Enabled").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("Enabled").Updates(row).Error
 	//e = response.CheckErr(err, "广告 adService  Edit Updates err")
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	// e = response.CheckErr(err, "tags tagsService  Change Updates err")
 	return
 }
@@ -178,7 +173,7 @@ func (this tagsService) Change(changeReq model.TagsDetailReq) (e error) {
 // Del tags删除
 func (this tagsService) Del(id int) (e error) {
 	var row model.Tags
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "tags tagsService Del ErrRecordNotFound!"); e != nil {
 		return
@@ -187,7 +182,7 @@ func (this tagsService) Del(id int) (e error) {
 		return
 	}
 	// 删除
-	err = this.db.Delete(&row).Error
+	err = db.GetDb().Delete(&row).Error
 	e = response.CheckErr(err, "tags tagsService Del Delete err")
 	return
 }
@@ -201,7 +196,7 @@ func (this tagsService) DelBatch(delReq model.TagsDelBatchReq) (e error) {
 		return
 	}
 	// 执行批量删除
-	err := this.db.Where("id IN (?)", delReq.Ids).Delete(model.Tags{}).Error
+	err := db.GetDb().Where("id IN (?)", delReq.Ids).Delete(model.Tags{}).Error
 	// 检查并处理错误
 	e = response.CheckErr(err, "时间段 TagsService DelBatch Delete err")
 	return

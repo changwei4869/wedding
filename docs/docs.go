@@ -38,7 +38,10 @@ const docTemplate = `{
                     "200": {
                         "description": "成功获取所有管理员",
                         "schema": {
-                            "$ref": "#/definitions/response.PageResp"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Admins"
+                            }
                         }
                     }
                 }
@@ -164,6 +167,202 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "管理员成功登陆",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/banner": {
+            "get": {
+                "description": "列出所有轮播图",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "banner"
+                ],
+                "summary": "列出所有轮播图",
+                "responses": {
+                    "200": {
+                        "description": "成功获取所有轮播图",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Banners"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "编辑轮播图",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "banner"
+                ],
+                "summary": "编辑轮播图",
+                "parameters": [
+                    {
+                        "description": "Banner 信息",
+                        "name": "Banner",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BannersEditReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "添加轮播图",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "banner"
+                ],
+                "summary": "添加轮播图",
+                "parameters": [
+                    {
+                        "description": "Banner 信息",
+                        "name": "Banner",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BannersAddReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "成功添加轮播图",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/banner/:id": {
+            "delete": {
+                "description": "删除指定id的轮播图",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "banner"
+                ],
+                "summary": "删除指定id的轮播图",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功删除轮播图",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/banner/down/:id": {
+            "put": {
+                "description": "下移轮播图",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "banner"
+                ],
+                "summary": "下移轮播图",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/banner/up/:id": {
+            "put": {
+                "description": "上移轮播图",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "banner"
+                ],
+                "summary": "上移轮播图",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/category": {
+            "post": {
+                "description": "添加栏目",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "添加栏目",
+                "parameters": [
+                    {
+                        "description": "Category 信息",
+                        "name": "Category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CategoriesAddReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "成功添加栏目",
                         "schema": {
                             "type": "string"
                         }
@@ -1033,6 +1232,109 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                }
+            }
+        },
+        "model.Admins": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Banners": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "display_order": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "link_article": {
+                    "type": "string"
+                },
+                "link_url": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.BannersAddReq": {
+            "type": "object",
+            "properties": {
+                "display_order": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "link_article": {
+                    "type": "string"
+                },
+                "link_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.BannersEditReq": {
+            "type": "object",
+            "properties": {
+                "display_order": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "link_article": {
+                    "type": "string"
+                },
+                "link_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CategoriesAddReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
                 }
             }
         },

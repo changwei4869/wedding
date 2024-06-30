@@ -2,25 +2,20 @@ package permission
 
 import (
 	"github.com/changwei4869/wedding/model"
-	"gorm.io/gorm"
+	"github.com/changwei4869/wedding/modules/db"
 )
 
-type ITagsService interface {
+type IPermissionsService interface {
+	ListAll() ([]model.Permissions, error)
 }
 
-// NewPermissionService 创建新的 PermissionService
-func NewPermissionService(db *gorm.DB) *PermissionService {
-	return &PermissionService{db: db}
-}
+type permissionService struct{}
+
+var PermissionIns IPermissionsService = permissionService{}
 
 // ListAll 获取所有权限
-func (service *PermissionService) ListAll() ([]model.Permissions, error) {
+func (this permissionService) ListAll() ([]model.Permissions, error) {
 	var res []model.Permissions
-	err := service.db.Find(&res).Error
+	err := db.GetDb().Find(&res).Error
 	return res, err
-}
-
-// PermissionService 用于处理权限相关的数据库操作
-type PermissionService struct {
-	db *gorm.DB
 }

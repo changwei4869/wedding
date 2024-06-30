@@ -11,7 +11,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 
 	"github.com/changwei4869/wedding/model"
-	"github.com/changwei4869/wedding/modules/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,7 +30,7 @@ func AdminLogin(c *gin.Context) {
 		return
 	}
 
-	admin, err := NewAdminsService(db.GetDb()).GetAdminByPhone(login.Phone)
+	admin, err := AdminIns.GetAdminByPhone(login.Phone)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error getting admin from db: %s", err))
 		return
@@ -61,10 +60,10 @@ func AdminLogin(c *gin.Context) {
 // @description 列出所有管理员
 // @tags admin
 // @produce application/json
-// @success 200 {object} response.PageResp "成功获取所有管理员"
+// @success 200 {array} model.Admins "成功获取所有管理员"
 // @router /admin [get]
 func ListAdmin(c *gin.Context) {
-	res, err := NewAdminsService(db.GetDb()).All()
+	res, err := AdminIns.All()
 	if err != nil {
 		c.String(http.StatusInternalServerError, "error fetching admins from db")
 		return
@@ -89,7 +88,7 @@ func AddAdmin(c *gin.Context) {
 	}
 
 	admin.Password = utils.ComputeMD5(admin.Password)
-	if err := NewAdminsService(db.GetDb()).Add(admin); err != nil {
+	if err := AdminIns.Add(admin); err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error adding admin to db: %s", err))
 		return
 	}
@@ -117,7 +116,7 @@ func DeleteAdmin(c *gin.Context) {
 		c.String(http.StatusBadRequest, "id is not a number")
 		return
 	}
-	err = NewAdminsService(db.GetDb()).Del(adminID)
+	err = AdminIns.Del(adminID)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("delete admin from db error: %s", err))
 		return
@@ -141,7 +140,7 @@ func EditAdmin(c *gin.Context) {
 		c.String(http.StatusBadRequest, "invalid JSON format")
 		return
 	}
-	err := NewAdminsService(db.GetDb()).Edit(updatedAdmin)
+	err := AdminIns.Edit(updatedAdmin)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error updating admin in db: %s", err))
 		return

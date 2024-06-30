@@ -2,20 +2,16 @@ package site
 
 import (
 	"github.com/changwei4869/wedding/model"
-	"gorm.io/gorm"
+	"github.com/changwei4869/wedding/modules/db"
 )
 
-type SiteService struct {
-	db *gorm.DB
-}
+type SiteService struct{}
 
-func NewSiteService(db *gorm.DB) *SiteService {
-	return &SiteService{db: db}
-}
+var SiteIns = &SiteService{}
 
 func (s *SiteService) Detail(id int) (model.SitesResp, error) {
 	var site model.Sites
-	if err := s.db.First(&site, id).Error; err != nil {
+	if err := db.GetDb().First(&site, id).Error; err != nil {
 		return model.SitesResp{}, err
 	}
 	return model.SitesResp{
@@ -27,7 +23,7 @@ func (s *SiteService) Detail(id int) (model.SitesResp, error) {
 
 func (s *SiteService) GetAll() ([]model.SitesResp, error) {
 	var sites []model.Sites
-	if err := s.db.Find(&sites).Error; err != nil {
+	if err := db.GetDb().Find(&sites).Error; err != nil {
 		return nil, err
 	}
 
@@ -48,15 +44,15 @@ func (s *SiteService) Add(site model.SitesAddReq) error {
 		City:   site.City,
 		Status: site.Status,
 	}
-	return s.db.Create(&newSite).Error
+	return db.GetDb().Create(&newSite).Error
 }
 
 func (s *SiteService) Del(id int) error {
-	return s.db.Delete(&model.Sites{}, id).Error
+	return db.GetDb().Delete(&model.Sites{}, id).Error
 }
 
 func (s *SiteService) Edit(site model.SitesEditReq) error {
-	return s.db.Model(&model.Sites{}).Where("id = ?", site.ID).Updates(model.Sites{
+	return db.GetDb().Model(&model.Sites{}).Where("id = ?", site.ID).Updates(model.Sites{
 		City:   site.City,
 		Status: site.Status,
 	}).Error

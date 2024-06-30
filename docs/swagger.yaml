@@ -31,6 +31,73 @@ definitions:
       phone:
         type: string
     type: object
+  model.Admins:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      role_id:
+        type: integer
+      status:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  model.Banners:
+    properties:
+      created_at:
+        type: string
+      display_order:
+        type: integer
+      id:
+        type: integer
+      image_url:
+        type: string
+      link_article:
+        type: string
+      link_url:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.BannersAddReq:
+    properties:
+      display_order:
+        type: integer
+      image_url:
+        type: string
+      link_article:
+        type: string
+      link_url:
+        type: string
+    type: object
+  model.BannersEditReq:
+    properties:
+      display_order:
+        type: integer
+      id:
+        type: integer
+      image_url:
+        type: string
+      link_article:
+        type: string
+      link_url:
+        type: string
+    type: object
+  model.CategoriesAddReq:
+    properties:
+      name:
+        type: string
+      parent_id:
+        type: integer
+    type: object
   model.HealthResp:
     properties:
       status:
@@ -421,7 +488,9 @@ paths:
         "200":
           description: 成功获取所有管理员
           schema:
-            $ref: '#/definitions/response.PageResp'
+            items:
+              $ref: '#/definitions/model.Admins'
+            type: array
       summary: 列出所有管理员
       tags:
       - admin
@@ -508,6 +577,134 @@ paths:
       summary: 管理员登陆
       tags:
       - admin
+  /banner:
+    get:
+      description: 列出所有轮播图
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取所有轮播图
+          schema:
+            items:
+              $ref: '#/definitions/model.Banners'
+            type: array
+      summary: 列出所有轮播图
+      tags:
+      - banner
+    post:
+      consumes:
+      - application/json
+      description: 添加轮播图
+      parameters:
+      - description: Banner 信息
+        in: body
+        name: Banner
+        required: true
+        schema:
+          $ref: '#/definitions/model.BannersAddReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 成功添加轮播图
+          schema:
+            type: string
+      summary: 添加轮播图
+      tags:
+      - banner
+    put:
+      consumes:
+      - application/json
+      description: 编辑轮播图
+      parameters:
+      - description: Banner 信息
+        in: body
+        name: Banner
+        required: true
+        schema:
+          $ref: '#/definitions/model.BannersEditReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      summary: 编辑轮播图
+      tags:
+      - banner
+  /banner/:id:
+    delete:
+      description: 删除指定id的轮播图
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: 成功删除轮播图
+          schema:
+            type: string
+      summary: 删除指定id的轮播图
+      tags:
+      - banner
+  /banner/down/:id:
+    put:
+      consumes:
+      - application/json
+      description: 下移轮播图
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      summary: 下移轮播图
+      tags:
+      - banner
+  /banner/up/:id:
+    put:
+      consumes:
+      - application/json
+      description: 上移轮播图
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      summary: 上移轮播图
+      tags:
+      - banner
+  /category:
+    post:
+      consumes:
+      - application/json
+      description: 添加栏目
+      parameters:
+      - description: Category 信息
+        in: body
+        name: Category
+        required: true
+        schema:
+          $ref: '#/definitions/model.CategoriesAddReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 成功添加栏目
+          schema:
+            type: string
+      summary: 添加栏目
+      tags:
+      - category
   /health:
     get:
       consumes:

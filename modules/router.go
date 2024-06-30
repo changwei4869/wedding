@@ -4,6 +4,8 @@ import (
 	_ "github.com/changwei4869/wedding/docs"
 	"github.com/changwei4869/wedding/middleware"
 	"github.com/changwei4869/wedding/modules/admin"
+	"github.com/changwei4869/wedding/modules/banner"
+	"github.com/changwei4869/wedding/modules/category"
 	"github.com/changwei4869/wedding/modules/file"
 	"github.com/changwei4869/wedding/modules/health"
 	"github.com/changwei4869/wedding/modules/permission"
@@ -30,7 +32,7 @@ func InitRouter() {
 	r.GET("/api/health", health.HealthCheck)
 	r.POST("/api/admin/login", middleware.Cors(), admin.AdminLogin)
 
-	api := r.Group("/api", middleware.Logger(), middleware.JwtToken(), middleware.Cors())
+	api := r.Group("/api", middleware.Logger(), middleware.Cors())
 	{
 		// tag
 		api.GET("/tag/:id", tag.GetTagById)
@@ -71,6 +73,14 @@ func InitRouter() {
 		api.GET("/qrcodes", qrcode.GetAllQrCode)
 		api.POST("/qrcode", qrcode.AddQrCode)
 		api.PUT("/qrcode", qrcode.EditQrCode)
+		// banner
+		api.GET("/banner", banner.ListBanner)
+		api.POST("/banner", banner.AddBanner)
+		api.PUT("/banner", banner.EditBanner)
+		api.PUT("/banner/up/:id", banner.BannerMoveUp)
+		api.PUT("/banner/down/:id", banner.BannerMoveDown)
+		// category
+		api.POST("/category", category.AddCategory)
 	}
 	_ = r.Run(utils.HttpPort)
 

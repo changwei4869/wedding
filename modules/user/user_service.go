@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/changwei4869/wedding/model"
+	"github.com/changwei4869/wedding/modules/db"
 	"github.com/changwei4869/wedding/utils/response"
-	"gorm.io/gorm"
 )
 
 type IUsersService interface {
@@ -21,20 +21,15 @@ type IUsersService interface {
 	DelBatch(delReq model.UsersDelBatchReq) (e error)
 }
 
-// NewUsersService 初始化
-func NewUsersService(db *gorm.DB) IUsersService {
-	return &usersService{db: db}
-}
-
 // usersService users
-type usersService struct {
-	db *gorm.DB
-}
+type usersService struct{}
+
+var UserIns IUsersService = &usersService{}
 
 // All users列表
 func (this usersService) All() (res response.PageResp, e error) {
 	// 数据
-	query := this.db.Model(&model.Users{})
+	query := db.GetDb().Model(&model.Users{})
 	var rows []model.Users
 	err := query.Order("id desc").Find(&rows).Error
 	if e = response.CheckErr(err, "users usersService  All Find err"); e != nil {
@@ -53,7 +48,7 @@ func (this usersService) All() (res response.PageResp, e error) {
 // Count users
 func (this usersService) Count() (res map[string]interface{}, e error) {
 	var Count int64
-	query := this.db.Model(&model.Users{})
+	query := db.GetDb().Model(&model.Users{})
 	var rows []model.Users
 	err := query.Find(&rows).Count(&Count).Error
 	if e = response.CheckErr(err, "users usersService  All Find err"); e != nil {
@@ -70,7 +65,7 @@ func (this usersService) List(page response.PageReq, listReq model.UsersListReq)
 	limit := page.PageSize
 	offset := page.PageSize * (page.PageNo - 1)
 	// 查询
-	query := this.db.Model(&model.Users{})
+	query := db.GetDb().Model(&model.Users{})
 	if listReq.Id > 0 {
 		query = query.Where("id = ?", listReq.Id)
 	}
@@ -208,7 +203,7 @@ func (this usersService) List(page response.PageReq, listReq model.UsersListReq)
 // Detail users详情
 func (this usersService) Detail(id int) (res model.UsersResp, e error) {
 	var row model.Users
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", id).Limit(1).First(&row).Error
 	if e = response.ErrRecordNotFound(err, "users users  Detail ErrRecordNotFound!"); e != nil {
 		return
 	}
@@ -225,7 +220,7 @@ func (this usersService) Detail(id int) (res model.UsersResp, e error) {
 func (this usersService) Add(addReq model.UsersAddReq) (e error) {
 	var row model.Users
 	response.CopyStruct(&row, addReq)
-	err := this.db.Create(&row).Error
+	err := db.GetDb().Create(&row).Error
 	e = response.CheckErr(err, "users usersService  Add Create err")
 	return
 }
@@ -233,7 +228,7 @@ func (this usersService) Add(addReq model.UsersAddReq) (e error) {
 // Edit users编辑
 func (this usersService) Edit(editReq model.UsersEditReq) (e error) {
 	var row model.Users
-	err := this.db.Where("id = ?", editReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", editReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "users usersService Edit ErrRecordNotFound!"); e != nil {
 		return
@@ -243,14 +238,14 @@ func (this usersService) Edit(editReq model.UsersEditReq) (e error) {
 	}
 	// 更新
 	response.CopyStruct(&row, editReq)
-	err = this.db.Model(&row).Updates(row).Error
+	err = db.GetDb().Model(&row).Updates(row).Error
 	e = response.CheckErr(err, "users usersService Edit Updates err")
 
 	//强制更新 当IsShow=0
-	//err = this.db.Model(&row).Select("IsShow").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("IsShow").Updates(row).Error
 	//e = response.CheckErr(err, "users usersService  Edit Updates err")
 	//强制更新 isDisable=0
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	//e = response.CheckErr(err, "users usersService  Edit Updates err")
 	return
 }
@@ -258,7 +253,7 @@ func (this usersService) Edit(editReq model.UsersEditReq) (e error) {
 // Change users 状态切换
 func (this usersService) Change(changeReq model.UsersDetailReq) (e error) {
 	var row model.Users
-	err := this.db.Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "users usersService Change ErrRecordNotFound!(id="+strconv.Itoa(int(changeReq.Id))+")"); e != nil {
 		return
@@ -267,9 +262,9 @@ func (this usersService) Change(changeReq model.UsersDetailReq) (e error) {
 		return
 	}
 	// 更新
-	//err = this.db.Model(&row).Select("Enabled").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("Enabled").Updates(row).Error
 	//e = response.CheckErr(err, "广告 adService  Edit Updates err")
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	// e = response.CheckErr(err, "users usersService  Change Updates err")
 	return
 }
@@ -277,7 +272,7 @@ func (this usersService) Change(changeReq model.UsersDetailReq) (e error) {
 // Del users删除
 func (this usersService) Del(id int) (e error) {
 	var row model.Users
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "users usersService Del ErrRecordNotFound!"); e != nil {
 		return
@@ -286,7 +281,7 @@ func (this usersService) Del(id int) (e error) {
 		return
 	}
 	// 删除
-	err = this.db.Delete(&row).Error
+	err = db.GetDb().Delete(&row).Error
 	e = response.CheckErr(err, "users usersService Del Delete err")
 	return
 }
@@ -300,7 +295,7 @@ func (this usersService) DelBatch(delReq model.UsersDelBatchReq) (e error) {
 		return
 	}
 	// 执行批量删除
-	err := this.db.Where("id IN (?)", delReq.Ids).Delete(model.Users{}).Error
+	err := db.GetDb().Where("id IN (?)", delReq.Ids).Delete(model.Users{}).Error
 	// 检查并处理错误
 	e = response.CheckErr(err, "时间段 UsersService DelBatch Delete err")
 	return

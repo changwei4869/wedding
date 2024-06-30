@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/changwei4869/wedding/modules/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +16,7 @@ import (
 // @Failure 500 {string} string "内部服务器错误"
 // @Router /permissions [get]
 func ListPermission(c *gin.Context) {
-	permissions, err := NewPermissionService(db.GetDb()).ListAll()
+	permissions, err := PermissionIns.ListAll()
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("get permissions from db error: %s", err))
 		return

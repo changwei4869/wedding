@@ -7,7 +7,6 @@ import (
 
 	"github.com/changwei4869/wedding/model"
 
-	"github.com/changwei4869/wedding/modules/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,7 +31,7 @@ func GetSiteById(c *gin.Context) {
 		return
 	}
 
-	site, err := NewSiteService(db.GetDb()).Detail(siteId)
+	site, err := SiteIns.Detail(siteId)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("get site from db error: %s", err))
 		return
@@ -57,7 +56,7 @@ func AddSite(c *gin.Context) {
 		return
 	}
 
-	if err := NewSiteService(db.GetDb()).Add(site); err != nil {
+	if err := SiteIns.Add(site); err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error adding site to db: %s", err))
 		return
 	}
@@ -85,7 +84,7 @@ func DeleteSite(c *gin.Context) {
 		c.String(http.StatusBadRequest, "id is not a number")
 		return
 	}
-	err = NewSiteService(db.GetDb()).Del(siteID)
+	err = SiteIns.Del(siteID)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("delete site from db error: %s", err))
 		return
@@ -103,7 +102,7 @@ func DeleteSite(c *gin.Context) {
 // @Success 200 {array} model.SitesResp "成功获取所有站点"
 // @Router /site [get]
 func GetAllSites(c *gin.Context) {
-	sites, err := NewSiteService(db.GetDb()).GetAll()
+	sites, err := SiteIns.GetAll()
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("get all sites from db error: %s", err))
 		return
@@ -128,7 +127,7 @@ func EditSite(c *gin.Context) {
 		return
 	}
 	// 保存更新后的站点信息到数据库
-	err := NewSiteService(db.GetDb()).Edit(updatedSite)
+	err := SiteIns.Edit(updatedSite)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error updating site in db: %s", err))
 		return

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/changwei4869/wedding/model"
-	"github.com/changwei4869/wedding/modules/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,12 +19,12 @@ import (
 // @router /qrcode [post]
 func AddQrCode(c *gin.Context) {
 	req := model.QrCodesAddReq{}
-	if err := c.Bind(&req); err != nil {
+	if err := c.BindJSON(&req); err != nil {
 		c.String(http.StatusBadRequest, "invalid JSON format")
 		return
 	}
 
-	if err := NewQrCodesService(db.GetDb()).Add(req); err != nil {
+	if err := QrCodeIns.Add(req); err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error adding qrcode to db: %s", err))
 		return
 	}
@@ -41,7 +40,7 @@ func AddQrCode(c *gin.Context) {
 // @success 200 {array} model.QrCodes "成功获取所有二维码"
 // @router /qrcodes [get]
 func GetAllQrCode(c *gin.Context) {
-	res, err := NewQrCodesService(db.GetDb()).All()
+	res, err := QrCodeIns.All()
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error getting qrcodes from db: %s", err))
 		return
@@ -64,7 +63,7 @@ func EditQrCode(c *gin.Context) {
 		c.String(http.StatusBadRequest, "invalid JSON format")
 		return
 	}
-	if err := NewQrCodesService(db.GetDb()).Edit(req); err != nil {
+	if err := QrCodeIns.Edit(req); err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error editing qrcode to db: %s", err))
 		return
 	}

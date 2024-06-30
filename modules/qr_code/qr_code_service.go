@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/changwei4869/wedding/model"
+	"github.com/changwei4869/wedding/modules/db"
 	"github.com/changwei4869/wedding/utils/response"
-	"gorm.io/gorm"
 )
 
 type IQrCodesService interface {
@@ -21,33 +21,28 @@ type IQrCodesService interface {
 	DelBatch(delReq model.QrCodesDelBatchReq) (e error)
 }
 
-// NewQrCodesService 初始化
-func NewQrCodesService(db *gorm.DB) IQrCodesService {
-	return &qrCodesService{db: db}
-}
-
 // qrCodesService qrCodes
-type qrCodesService struct {
-	db *gorm.DB
-}
+type qrCodesService struct{}
+
+var QrCodeIns IQrCodesService = qrCodesService{}
 
 // All qrCodes列表
 func (this qrCodesService) All() (res []model.QrCodes, e error) {
 	// 数据
-	query := this.db.Model(&model.QrCodes{})
+	query := db.GetDb().Model(&model.QrCodes{})
 	var rows []model.QrCodes
 	err := query.Order("id desc").Find(&rows).Error
 	if e = response.CheckErr(err, "qrCodes qrCodesService  All Find err"); e != nil {
 		return
 	}
-	
+
 	return rows, nil
 }
 
 // Count qrCodes
 func (this qrCodesService) Count() (res map[string]interface{}, e error) {
 	var Count int64
-	query := this.db.Model(&model.QrCodes{})
+	query := db.GetDb().Model(&model.QrCodes{})
 	var rows []model.QrCodes
 	err := query.Find(&rows).Count(&Count).Error
 	if e = response.CheckErr(err, "qrCodes qrCodesService  All Find err"); e != nil {
@@ -64,7 +59,7 @@ func (this qrCodesService) List(page response.PageReq, listReq model.QrCodesList
 	limit := page.PageSize
 	offset := page.PageSize * (page.PageNo - 1)
 	// 查询
-	query := this.db.Model(&model.QrCodes{})
+	query := db.GetDb().Model(&model.QrCodes{})
 	if listReq.Id > 0 {
 		query = query.Where("id = ?", listReq.Id)
 	}
@@ -100,7 +95,7 @@ func (this qrCodesService) List(page response.PageReq, listReq model.QrCodesList
 // Detail qrCodes详情
 func (this qrCodesService) Detail(id int) (res model.QrCodesResp, e error) {
 	var row model.QrCodes
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", id).Limit(1).First(&row).Error
 	if e = response.ErrRecordNotFound(err, "qrCodes qrCodes  Detail ErrRecordNotFound!"); e != nil {
 		return
 	}
@@ -115,7 +110,7 @@ func (this qrCodesService) Detail(id int) (res model.QrCodesResp, e error) {
 func (this qrCodesService) Add(addReq model.QrCodesAddReq) (e error) {
 	var row model.QrCodes
 	response.CopyStruct(&row, addReq)
-	err := this.db.Create(&row).Error
+	err := db.GetDb().Create(&row).Error
 	e = response.CheckErr(err, "qrCodes qrCodesService  Add Create err")
 	return
 }
@@ -123,7 +118,7 @@ func (this qrCodesService) Add(addReq model.QrCodesAddReq) (e error) {
 // Edit qrCodes编辑
 func (this qrCodesService) Edit(editReq model.QrCodesEditReq) (e error) {
 	var row model.QrCodes
-	err := this.db.Where("id = ?", editReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", editReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "qrCodes qrCodesService Edit ErrRecordNotFound!"); e != nil {
 		return
@@ -133,14 +128,14 @@ func (this qrCodesService) Edit(editReq model.QrCodesEditReq) (e error) {
 	}
 	// 更新
 	response.CopyStruct(&row, editReq)
-	err = this.db.Model(&row).Updates(row).Error
+	err = db.GetDb().Model(&row).Updates(row).Error
 	e = response.CheckErr(err, "qrCodes qrCodesService Edit Updates err")
 
 	//强制更新 当IsShow=0
-	//err = this.db.Model(&row).Select("IsShow").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("IsShow").Updates(row).Error
 	//e = response.CheckErr(err, "qrCodes qrCodesService  Edit Updates err")
 	//强制更新 isDisable=0
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	//e = response.CheckErr(err, "qrCodes qrCodesService  Edit Updates err")
 	return
 }
@@ -148,7 +143,7 @@ func (this qrCodesService) Edit(editReq model.QrCodesEditReq) (e error) {
 // Change qrCodes 状态切换
 func (this qrCodesService) Change(changeReq model.QrCodesDetailReq) (e error) {
 	var row model.QrCodes
-	err := this.db.Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "qrCodes qrCodesService Change ErrRecordNotFound!(id="+strconv.Itoa(int(changeReq.Id))+")"); e != nil {
 		return
@@ -157,9 +152,9 @@ func (this qrCodesService) Change(changeReq model.QrCodesDetailReq) (e error) {
 		return
 	}
 	// 更新
-	//err = this.db.Model(&row).Select("Enabled").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("Enabled").Updates(row).Error
 	//e = response.CheckErr(err, "广告 adService  Edit Updates err")
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	// e = response.CheckErr(err, "qrCodes qrCodesService  Change Updates err")
 	return
 }
@@ -167,7 +162,7 @@ func (this qrCodesService) Change(changeReq model.QrCodesDetailReq) (e error) {
 // Del qrCodes删除
 func (this qrCodesService) Del(id int) (e error) {
 	var row model.QrCodes
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "qrCodes qrCodesService Del ErrRecordNotFound!"); e != nil {
 		return
@@ -176,7 +171,7 @@ func (this qrCodesService) Del(id int) (e error) {
 		return
 	}
 	// 删除
-	err = this.db.Delete(&row).Error
+	err = db.GetDb().Delete(&row).Error
 	e = response.CheckErr(err, "qrCodes qrCodesService Del Delete err")
 	return
 }
@@ -190,7 +185,7 @@ func (this qrCodesService) DelBatch(delReq model.QrCodesDelBatchReq) (e error) {
 		return
 	}
 	// 执行批量删除
-	err := this.db.Where("id IN (?)", delReq.Ids).Delete(model.QrCodes{}).Error
+	err := db.GetDb().Where("id IN (?)", delReq.Ids).Delete(model.QrCodes{}).Error
 	// 检查并处理错误
 	e = response.CheckErr(err, "时间段 QrCodesService DelBatch Delete err")
 	return

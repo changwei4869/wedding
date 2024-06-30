@@ -7,7 +7,6 @@ import (
 
 	"github.com/changwei4869/wedding/model"
 
-	"github.com/changwei4869/wedding/modules/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,7 +31,7 @@ func GetTagById(c *gin.Context) {
 		return
 	}
 
-	tag, err := NewTagsService(db.GetDb()).Detail(tagId)
+	tag, err := TagIns.Detail(tagId)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("get tag from db error: %s", err))
 		return
@@ -51,7 +50,7 @@ func GetTagById(c *gin.Context) {
 func GetAllTags(c *gin.Context) {
 	// 创建标签服务
 
-	tags, err := NewTagsService(db.GetDb()).GetAll()
+	tags, err := TagIns.GetAll()
 
 	if err != nil {
 		// 如果发生错误，返回错误响应
@@ -80,7 +79,7 @@ func AddTag(c *gin.Context) {
 		return
 	}
 
-	if err := NewTagsService(db.GetDb()).Add(tag); err != nil {
+	if err := TagIns.Add(tag); err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error adding tag to db: %s", err))
 		return
 	}
@@ -108,7 +107,7 @@ func DeleteTag(c *gin.Context) {
 		c.String(http.StatusBadRequest, "id is not a number")
 		return
 	}
-	err = NewTagsService(db.GetDb()).Del(tagID)
+	err = TagIns.Del(tagID)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("delete tag from db error: %s", err))
 		return
@@ -134,7 +133,7 @@ func EditTag(c *gin.Context) {
 		return
 	}
 	// 保存更新后的标签信息到数据库
-	err := NewTagsService(db.GetDb()).Edit(updatedTag)
+	err := TagIns.Edit(updatedTag)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("error updating tag in db: %s", err))
 		return

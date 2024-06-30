@@ -5,37 +5,32 @@ import (
 	"strconv"
 
 	"github.com/changwei4869/wedding/model"
+	"github.com/changwei4869/wedding/modules/db"
 	"github.com/changwei4869/wedding/utils/response"
-	"gorm.io/gorm"
 )
 
 type IRegistrationsService interface {
-	GetAll() (res response.PageResp, e error)
+	GetAll() ([]model.RegistrationsResp, error)
 	Count() (res map[string]interface{}, e error)
 	List(page response.PageReq, listReq model.RegistrationsListReq) (res response.PageResp, e error)
-	Detail(id int) (res model.RegistrationsResp, e error)
+	Detail(req model.RegistrationsDetailReq) ([]model.RegistrationsResp, error)
 	Add(addReq model.RegistrationsAddReq) (e error)
 	Edit(editReq model.RegistrationsEditReq) (e error)
 	Change(changeReq model.RegistrationsDetailReq) (e error)
 	Del(id int) (e error)
-	Create(registration *model.Registrations)
+	Create(registration *model.Registrations) error
 	DelBatch(delReq model.RegistrationsDelBatchReq) (e error)
 }
 
-// NewRegistrationsService 初始化
-func NewRegistrationsService(db *gorm.DB) *registrationsService {
-	return &registrationsService{db: db}
-}
-
 // registrationsService registrations
-type registrationsService struct {
-	db *gorm.DB
-}
+type registrationsService struct{}
+
+var RegistrationIns IRegistrationsService = registrationsService{}
 
 // All retrieves all registrations and returns them in the RegistrationsResp format
 func (this registrationsService) GetAll() ([]model.RegistrationsResp, error) {
 	var registrations []model.Registrations
-	if err := this.db.Find(&registrations).Error; err != nil {
+	if err := db.GetDb().Find(&registrations).Error; err != nil {
 		return nil, err
 	}
 
@@ -81,7 +76,7 @@ func (this registrationsService) GetAll() ([]model.RegistrationsResp, error) {
 // Count registrations
 func (this registrationsService) Count() (res map[string]interface{}, e error) {
 	var Count int64
-	query := this.db.Model(&model.Registrations{})
+	query := db.GetDb().Model(&model.Registrations{})
 	var rows []model.Registrations
 	err := query.Find(&rows).Count(&Count).Error
 	if e = response.CheckErr(err, "registrations registrationsService  All Find err"); e != nil {
@@ -98,7 +93,7 @@ func (this registrationsService) List(page response.PageReq, listReq model.Regis
 	limit := page.PageSize
 	offset := page.PageSize * (page.PageNo - 1)
 	// 查询
-	query := this.db.Model(&model.Registrations{})
+	query := db.GetDb().Model(&model.Registrations{})
 	if listReq.Id > 0 {
 		query = query.Where("id = ?", listReq.Id)
 	}
@@ -214,7 +209,7 @@ func (this registrationsService) List(page response.PageReq, listReq model.Regis
 // Detail registrations详情
 func (this registrationsService) Detail(req model.RegistrationsDetailReq) (res []model.RegistrationsResp, e error) {
 	var rows []model.Registrations
-	query := this.db.Model(&model.Registrations{})
+	query := db.GetDb().Model(&model.Registrations{})
 
 	// 根据status和location查询
 	if req.Status != 0 {
@@ -243,14 +238,14 @@ func (this registrationsService) Detail(req model.RegistrationsDetailReq) (res [
 }
 
 func (this registrationsService) Create(registration *model.Registrations) error {
-	return this.db.Create(&registration).Error
+	return db.GetDb().Create(&registration).Error
 }
 
 // Add registrations新增
 func (this registrationsService) Add(addReq model.RegistrationsAddReq) (e error) {
 	var row model.Registrations
 	response.CopyStruct(&row, addReq)
-	err := this.db.Create(&row).Error
+	err := db.GetDb().Create(&row).Error
 	e = response.CheckErr(err, "registrations registrationsService  Add Create err")
 	return
 }
@@ -258,7 +253,7 @@ func (this registrationsService) Add(addReq model.RegistrationsAddReq) (e error)
 // Edit registrations编辑
 func (this registrationsService) Edit(editReq model.RegistrationsEditReq) (e error) {
 	var row model.Registrations
-	err := this.db.Where("id = ?", editReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", editReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "registrations registrationsService Edit ErrRecordNotFound!"); e != nil {
 		return
@@ -268,14 +263,14 @@ func (this registrationsService) Edit(editReq model.RegistrationsEditReq) (e err
 	}
 	// 更新
 	response.CopyStruct(&row, editReq)
-	err = this.db.Model(&row).Updates(row).Error
+	err = db.GetDb().Model(&row).Updates(row).Error
 	e = response.CheckErr(err, "registrations registrationsService Edit Updates err")
 
 	//强制更新 当IsShow=0
-	//err = this.db.Model(&row).Select("IsShow").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("IsShow").Updates(row).Error
 	//e = response.CheckErr(err, "registrations registrationsService  Edit Updates err")
 	//强制更新 isDisable=0
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": editReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	//e = response.CheckErr(err, "registrations registrationsService  Edit Updates err")
 	return
 }
@@ -283,7 +278,7 @@ func (this registrationsService) Edit(editReq model.RegistrationsEditReq) (e err
 // Change registrations 状态切换
 func (this registrationsService) Change(changeReq model.RegistrationsDetailReq) (e error) {
 	var row model.Registrations
-	err := this.db.Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", changeReq.Id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "registrations registrationsService Change ErrRecordNotFound!(id="+strconv.Itoa(int(changeReq.Id))+")"); e != nil {
 		return
@@ -292,9 +287,9 @@ func (this registrationsService) Change(changeReq model.RegistrationsDetailReq) 
 		return
 	}
 	// 更新
-	//err = this.db.Model(&row).Select("Enabled").Updates(row).Error
+	//err = db.GetDb().Model(&row).Select("Enabled").Updates(row).Error
 	//e = response.CheckErr(err, "广告 adService  Edit Updates err")
-	//err = this.db.Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
+	//err = db.GetDb().Model(&row).Updates(map[string]interface{}{"IsDisable": changeReq.isDisable, "UpdateTime": time.Now().Unix()}).Error
 	// e = response.CheckErr(err, "registrations registrationsService  Change Updates err")
 	return
 }
@@ -302,7 +297,7 @@ func (this registrationsService) Change(changeReq model.RegistrationsDetailReq) 
 // Del registrations删除
 func (this registrationsService) Del(id int) (e error) {
 	var row model.Registrations
-	err := this.db.Where("id = ?", id).Limit(1).First(&row).Error
+	err := db.GetDb().Where("id = ?", id).Limit(1).First(&row).Error
 	// 校验
 	if e = response.ErrRecordNotFound(err, "registrations registrationsService Del ErrRecordNotFound!"); e != nil {
 		return
@@ -311,7 +306,7 @@ func (this registrationsService) Del(id int) (e error) {
 		return
 	}
 	// 删除
-	err = this.db.Delete(&row).Error
+	err = db.GetDb().Delete(&row).Error
 	e = response.CheckErr(err, "registrations registrationsService Del Delete err")
 	return
 }
@@ -325,7 +320,7 @@ func (this registrationsService) DelBatch(delReq model.RegistrationsDelBatchReq)
 		return
 	}
 	// 执行批量删除
-	err := this.db.Where("id IN (?)", delReq.Ids).Delete(model.Registrations{}).Error
+	err := db.GetDb().Where("id IN (?)", delReq.Ids).Delete(model.Registrations{}).Error
 	// 检查并处理错误
 	e = response.CheckErr(err, "时间段 RegistrationsService DelBatch Delete err")
 	return
